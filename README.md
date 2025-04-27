@@ -13,6 +13,47 @@
 
 ---
 
+## 👥 팀 소개
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/leewajin">
+        <img src="https://avatars.githubusercontent.com/leewajin" width="100px;" alt=""/>
+        <br />
+        <sub><b>이화진</b></sub>
+      </a>
+      <br />팀장<br /> A
+    </td>
+    <td align="center">
+      <a href="https://github.com/jangjuntae">
+        <img src="https://avatars.githubusercontent.com/jangjuntae" width="100px;" alt=""/>
+        <br />
+        <sub><b>장준태</b></sub>
+      </a>
+      <br />팀원<br />B
+    </td>
+    <td align="center">
+      <a href="https://github.com/eongeung">
+        <img src="https://avatars.githubusercontent.com/eongeung" width="100px;" alt=""/>
+        <br />
+        <sub><b>이영흔</b></sub>
+      </a>
+      <br />팀원<br />C
+    </td>
+    <td align="center">
+      <a href="https://github.com/seoyoomi">
+        <img src="https://avatars.githubusercontent.com/seoyoomi" width="100px;" alt=""/>
+        <br />
+        <sub><b>서유미</b></sub>
+      </a>
+      <br />팀원<br />C
+    </td>
+  </tr>
+</table>
+
+
+---
 ## 1. 과제의 필요성
 
 대학 캠퍼스 내에서는 학습에 필요한 물품이나, 갑작스럽게 필요한 우산 등 다양한 생활 용품이 필요한 순간이 빈번하게 발생합니다. 그러나 현재 이러한 공유 시스템은 체계적으로 정비되어 있지 않거나, 학생들이 존재 자체를 인지하지 못해 효율성과 접근성이 떨어지고 있습니다.
@@ -27,10 +68,6 @@
 ---
 
 ## 2. 과제의 내용
-
-- **구현 플랫폼**
-  - 프론트엔드(앱): **Flutter (Java 기반)**
-  - 백엔드: **Spring Framework**, **MySQL**
 
 - **주요 기능**
   - QR 기반 물품 대여/반납 시스템
