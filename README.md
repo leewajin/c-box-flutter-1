@@ -1,5 +1,3 @@
-# c-box-flutter
-
 # C:BOX (Campus Box)
 
 ## 🛠️ 기술 스택
