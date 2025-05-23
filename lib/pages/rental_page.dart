@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/rental_qr_page.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -15,6 +16,8 @@ class _RentalPageState extends State<RentalPage> {
 
   String selectedCollege = '문과대학';
   String searchText = '';
+
+  final TextEditingController _itemController = TextEditingController();
 
   final Map<String, List<String>> rentalItems = {
     '문과대학': ['우산', '보조배터리'],
@@ -69,6 +72,39 @@ class _RentalPageState extends State<RentalPage> {
               },
             ),
           ),
+
+          // ➕ 물품 등록
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _itemController,
+                    decoration: const InputDecoration(
+                      hintText: '새 물품 이름 입력',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    final newItem = _itemController.text.trim();
+                    if (newItem.isNotEmpty) {
+                      setState(() {
+                        rentalItems[selectedCollege] ??= [];
+                        rentalItems[selectedCollege]!.add(newItem);
+                        _itemController.clear();
+                      });
+                    }
+                  },
+                  child: const Text("등록"),
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 12),
 
           // 🎒 물품 목록
@@ -87,9 +123,9 @@ class _RentalPageState extends State<RentalPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => Scaffold(
-                              appBar: AppBar(title: const Text('대여하기')),
-                              body: Center(child: Text('$item 대여 페이지')),
+                            builder: (_) => QRScanPage(
+                              itemName: item,
+                              isRenting: true,
                             ),
                           ),
                         );

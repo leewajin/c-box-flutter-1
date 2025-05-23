@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/home_menu_page.dart'; // ← 경로에 맞게 조정
 
+
 void main() {
   runApp(const MyApp());
 }
