@@ -38,10 +38,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
           label: '홈',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add),
-          label: '미션 올리기',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: '내 프로필',
         ),

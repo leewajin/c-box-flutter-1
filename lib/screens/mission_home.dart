@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/category_tab.dart';
 import '../widgets/post_card.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../screens/message_list_page.dart';  // ✉️ 쪽지 목록 화면 import
 import '../widgets/hot_post_card.dart';
 import '../screens/post_detail_page.dart';
+import '../screens/message_list_page.dart';
+import '../screens/post_create_page.dart';
 
 class MissionHome extends StatelessWidget {
   const MissionHome({super.key});
@@ -61,6 +62,18 @@ class MissionHome extends StatelessWidget {
       ),
       body: const MainContent(),
       bottomNavigationBar: const BottomNavBar(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PostCreatePage()),
+        ),
+        backgroundColor: Colors.indigo,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: const Icon(Icons.add, size: 32, color: Colors.white,),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
@@ -88,7 +101,6 @@ class MainContent extends StatelessWidget {
             itemCount: hotPosts.length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, idx) {
-              // 이 안에서만 post 변수를 사용할 수 있습니다!
               final post = hotPosts[idx];
 
               return HotPostCard(
