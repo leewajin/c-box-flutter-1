@@ -3,6 +3,8 @@ import '../widgets/category_tab.dart';
 import '../widgets/post_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../screens/message_list_page.dart';  // ✉️ 쪽지 목록 화면 import
+import '../widgets/hot_post_card.dart';
+import '../screens/post_detail_page.dart';
 
 class MissionHome extends StatelessWidget {
   const MissionHome({super.key});
@@ -68,8 +70,44 @@ class MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 1) 핫게시글 데이터 선언
+    final hotPosts = [
+      {'title': '핫게시글1', 'subtitle': '댓글 12'},
+      {'title': '핫게시글2', 'subtitle': '댓글 8'},
+      {'title': '핫게시글3', 'subtitle': '댓글 20'},
+    ];
+
     return Column(
       children: [
+        // 2) 핫게시글 섹션
+        SizedBox(
+          height: 140,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            scrollDirection: Axis.horizontal,
+            itemCount: hotPosts.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, idx) {
+              // 이 안에서만 post 변수를 사용할 수 있습니다!
+              final post = hotPosts[idx];
+
+              return HotPostCard(
+                title: post['title']!,
+                subtitle: post['subtitle']!,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PostDetailPage()),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // 2) 검색창
         Padding(
           padding: const EdgeInsets.all(16),
           child: TextField(
@@ -85,6 +123,8 @@ class MainContent extends StatelessWidget {
             ),
           ),
         ),
+
+        // 3) 카테고리 탭
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
@@ -98,6 +138,8 @@ class MainContent extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16),
+
+        // 4) 게시글 리스트
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(16),
