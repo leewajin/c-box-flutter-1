@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/post_create_page.dart';  // 글쓰기 페이지 import
+import '../screens/my_page.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -13,12 +13,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   void _onItemTapped(int index) {
     if (index == 1) {
-      // 🔥 미션 올리기 버튼 눌렀을 때 PostCreatePage로 이동!
+      // 내 프로필 버튼 눌렀을 때 my_page로 이동!
+      //내 프로필 탭
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const PostCreatePage(),
-        ),
+        MaterialPageRoute(builder: (_) => const MyPage()),
       );
     } else {
       setState(() {
