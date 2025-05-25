@@ -11,8 +11,6 @@ class RentalStatusPage extends StatefulWidget {
 }
 
 class _RentalStatusPageState extends State<RentalStatusPage> {
-  int _selectedIndex = 0; // 하단 네비게이션 인덱스
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
