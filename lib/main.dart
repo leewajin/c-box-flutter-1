@@ -1,5 +1,6 @@
 import 'package:c_box/screens/login_page.dart';
 import 'package:c_box/screens/signup_page.dart';
+import 'package:c_box/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'screens/mission_home.dart';
 
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Pretendard',
       ),
       routes: {
-        '/': (context) => const LoginPage(),
+        '/': (context) => SplashPage(),
+        '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/mission_home': (context) => const MissionHome(),
       },
