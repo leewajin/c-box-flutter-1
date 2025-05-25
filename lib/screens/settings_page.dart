@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'app_intro_page.dart';
 import 'developer_page.dart';
 import 'contact_page.dart';
@@ -59,8 +60,16 @@ class SettingsPage extends StatelessWidget {
             icon: Icons.code,
             title: 'GitHub 링크',
             trailing: const Text('https://github.com/dijam2025'),
-            onTap: () {
-              // TODO: 외부 브라우저 오픈
+            onTap: () async {
+              final uri = Uri.parse('https://github.com/dijam2025');
+              if (!await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication, // 외부 브라우저로 열기
+              )) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('링크를 열 수 없습니다.')),
+                );
+              }
             },
           ),
           const Divider(height: 1),
