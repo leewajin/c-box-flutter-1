@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'rental_status_page.dart';
 import '../screens/mission_home.dart';
-
-// import 'mypage.dart'; // 필요 시 마이페이지 화면 파일 생성
-// import 'settings_page.dart'; // 필요 시 설정화면 파일 생성
+import 'my_page.dart'; // 필요 시 마이페이지 화면 파일 생성
+import 'settings_page.dart'; // 필요 시 설정화면 파일 생성
 
 class HomeMenuPage extends StatelessWidget {
   const HomeMenuPage({super.key});
@@ -49,7 +48,10 @@ class HomeMenuPage extends StatelessWidget {
               title: '마이페이지',
               icon: Icons.person,
               onTap: () {
-                // TODO: 마이페이지 연결
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MyPage()),
+                );
               },
             ),
             _buildMenuButton(
@@ -57,7 +59,10 @@ class HomeMenuPage extends StatelessWidget {
               title: '설정',
               icon: Icons.settings,
               onTap: () {
-                // TODO: 설정화면 연결
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsPage()),
+                );
               },
             ),
           ],
