@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("로그인 성공")),
         );
-        Navigator.pushNamed(context, '/mission_home');
+        Navigator.pushNamed(context, '/home_menu_page');
       }
     } else {
       // ❌ 로그인 실패 메시지

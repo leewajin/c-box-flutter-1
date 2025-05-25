@@ -1,3 +1,4 @@
+import 'package:c_box/screens/home_menu_page.dart';
 import 'package:c_box/screens/login_page.dart';
 import 'package:c_box/screens/signup_page.dart';
 import 'package:c_box/screens/splash.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashPage(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
-        '/mission_home': (context) => const MissionHome(),
+        '/home_menu_page': (context) => const HomeMenuPage(),
       },
       debugShowCheckedModeBanner: false,
     );
