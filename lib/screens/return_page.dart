@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class ReturnPage extends StatelessWidget {
   const ReturnPage({super.key});
@@ -10,6 +11,7 @@ class ReturnPage extends StatelessWidget {
       body: const Center(
         child: Text("반납 페이지는 추후 구현 예정입니다."),
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

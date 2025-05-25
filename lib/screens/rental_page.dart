@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/rental_qr_page.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -139,6 +140,7 @@ class _RentalPageState extends State<RentalPage> {
           ),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

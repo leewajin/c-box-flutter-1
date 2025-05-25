@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -10,8 +11,6 @@ class RentalStatusPage extends StatefulWidget {
 }
 
 class _RentalStatusPageState extends State<RentalStatusPage> {
-  int _selectedIndex = 0; // 하단 네비게이션 인덱스
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,23 +78,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
       ),
 
       // ✅ 하단 바 다시 추가됨!
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-            if (index == 0) {
-              Navigator.pushNamed(context, '/home'); // 홈
-            } else if (index == 1) {
-              Navigator.pushNamed(context, '/mypage'); // 마이페이지
-            }
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "마이페이지"),
-        ],
-      ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }
