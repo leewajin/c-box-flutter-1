@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -79,23 +80,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
       ),
 
       // ✅ 하단 바 다시 추가됨!
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-            if (index == 0) {
-              Navigator.pushNamed(context, '/home'); // 홈
-            } else if (index == 1) {
-              Navigator.pushNamed(context, '/mypage'); // 마이페이지
-            }
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "마이페이지"),
-        ],
-      ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

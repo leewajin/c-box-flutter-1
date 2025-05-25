@@ -38,7 +38,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: '내 프로필',
+          label: '마이페이지',
         ),
       ],
       backgroundColor: Colors.white,
