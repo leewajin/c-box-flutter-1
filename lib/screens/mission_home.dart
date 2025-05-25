@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/category_tab.dart';
 import '../widgets/post_card.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../screens/message_list_page.dart';  // ✉️ 쪽지 목록 화면 import
+import '../widgets/hot_post_card.dart';
+import '../screens/post_detail_page.dart';
+import '../screens/message_list_page.dart';
+import '../screens/post_create_page.dart';
 
 class MissionHome extends StatelessWidget {
   const MissionHome({super.key});
@@ -15,19 +18,10 @@ class MissionHome extends StatelessWidget {
         title: Row(
           children: [
             const Text(
-              'c:box',
+              'C:BOX',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const Spacer(),
-
-            // 검색 버튼
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                // TODO: 검색 액션
-              },
-            ),
-            const SizedBox(width: 10),
 
             // 알림 버튼 + 배지
             Stack(
@@ -68,6 +62,18 @@ class MissionHome extends StatelessWidget {
       ),
       body: const MainContent(),
       bottomNavigationBar: const BottomNavBar(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PostCreatePage()),
+        ),
+        backgroundColor: Colors.indigo,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: const Icon(Icons.add, size: 32, color: Colors.white,),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
@@ -77,8 +83,43 @@ class MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 1) 핫게시글 데이터 선언
+    final hotPosts = [
+      {'title': '핫게시글1', 'subtitle': '댓글 12'},
+      {'title': '핫게시글2', 'subtitle': '댓글 8'},
+      {'title': '핫게시글3', 'subtitle': '댓글 20'},
+    ];
+
     return Column(
       children: [
+        // 2) 핫게시글 섹션
+        SizedBox(
+          height: 140,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            scrollDirection: Axis.horizontal,
+            itemCount: hotPosts.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, idx) {
+              final post = hotPosts[idx];
+
+              return HotPostCard(
+                title: post['title']!,
+                subtitle: post['subtitle']!,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PostDetailPage()),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // 2) 검색창
         Padding(
           padding: const EdgeInsets.all(16),
           child: TextField(
@@ -94,6 +135,8 @@ class MainContent extends StatelessWidget {
             ),
           ),
         ),
+
+        // 3) 카테고리 탭
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
@@ -107,6 +150,8 @@ class MainContent extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16),
+
+        // 4) 게시글 리스트
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(16),

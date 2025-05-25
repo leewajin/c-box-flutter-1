@@ -21,7 +21,7 @@
         <br />
         <sub><b>이화진</b></sub>
       </a>
-      <br />팀장<br /> A
+      <br />팀장<br /> FE
     </td>
     <td align="center">
       <a href="https://github.com/jangjuntae">
@@ -29,7 +29,7 @@
         <br />
         <sub><b>장준태</b></sub>
       </a>
-      <br />팀원<br />B
+      <br />팀원<br /> BE
     </td>
     <td align="center">
       <a href="https://github.com/eongeung">
@@ -37,7 +37,7 @@
         <br />
         <sub><b>이영흔</b></sub>
       </a>
-      <br />팀원<br />C
+      <br />팀원<br /> BE
     </td>
     <td align="center">
       <a href="https://github.com/seoyoomi">
@@ -45,7 +45,7 @@
         <br />
         <sub><b>서유미</b></sub>
       </a>
-      <br />팀원<br />C
+      <br />팀원<br /> FE
     </td>
   </tr>
 </table>
