@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../screens/rental_qr_page.dart'; // QRScanPage import
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -11,6 +12,8 @@ class RentalStatusPage extends StatefulWidget {
 }
 
 class _RentalStatusPageState extends State<RentalStatusPage> {
+  List<Map<String, String>> myRentals = []; // 대여중인 물품 리스트
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +30,6 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 📦 대여 현황 영역
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
@@ -35,17 +37,34 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Card(
-              child: ListTile(
-                leading: Icon(Icons.umbrella),
-                title: Text("우산 1개"),
-                subtitle: Text("반납일: 2024-05-20"),
+
+          // ✅ 대여 목록 표시
+          if (myRentals.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text("현재 대여 중인 물품이 없습니다."),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: myRentals.length,
+                itemBuilder: (context, index) {
+                  final item = myRentals[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.inventory),
+                        title: Text(item['name'] ?? ''),
+                        subtitle: Text("반납일: ${item['dueDate']}"),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-          const SizedBox(height: 32),
+
+          const SizedBox(height: 16),
 
           // ✅ 대여 / 반납 버튼
           Padding(
@@ -54,19 +73,37 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const RentalPage()),
+                      MaterialPageRoute(
+                        builder: (_) => const RentalPage(),
+                      ),
                     );
+
+                    // ✅ QRScanPage에서 Navigator.pop(context, {name, dueDate})로 넘겨주는 경우 처리
+                    if (result != null && result is Map<String, String>) {
+                      setState(() {
+                        myRentals.add(result);
+                      });
+                    }
                   },
                   child: const Text("대여하러 가기"),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ReturnPage()),
+                      MaterialPageRoute(
+                        builder: (_) => ReturnPage(
+                          myRentals: myRentals,
+                          onReturnComplete: (index) {
+                            setState(() {
+                              myRentals.removeAt(index);
+                            });
+                          },
+                        ),
+                      ),
                     );
                   },
                   child: const Text("반납하러 가기"),
@@ -76,8 +113,6 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
           ),
         ],
       ),
-
-      // ✅ 하단 바 다시 추가됨!
       bottomNavigationBar: const BottomNavBar(),
     );
   }

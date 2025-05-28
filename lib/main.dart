@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => SplashPage(),
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignupPage(),
+      //  '/login': (context) => const LoginPage(),
+      //  '/signup': (context) => const SignupPage(),
         '/home_menu_page': (context) => const HomeMenuPage(),
       },
       debugShowCheckedModeBanner: false,
