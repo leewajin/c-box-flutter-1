@@ -23,40 +23,52 @@ class _QRScanPageState extends State<QRScanPage> {
 
   String rentalStatus = "";
   DateTime? returnDueDate;
-  bool _scanned = false; // 중복 스캔 방지
+  bool _scanned = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.isRenting) {
-      rentalStatus = "대여 완료";
+      rentalStatus = "대여";
       returnDueDate = DateTime.now().add(const Duration(days: 3));
     } else {
-      rentalStatus = "반납 완료";
+      rentalStatus = "반납";
     }
   }
 
-  void _showNotificationDialog() {
-    String message = "";
-
-    if (rentalStatus == "대여 완료") {
-      message =
-      "대여했습니다.\n반납 예정일은 ${returnDueDate?.toLocal().toString().split(' ')[0]}입니다.";
-    } else if (rentalStatus == "반납 완료") {
-      message = "반납했습니다.";
-    } else {
-      message = "대여 상태 없음.";
-    }
-
+  void _showNotificationDialog(String title, String message, {Map<String, String>? returnData, bool returnFlag = false}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("알림"),
+        title: Text(title),
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // 팝업 닫기
+              Navigator.pop(context, returnData ?? returnFlag); // QR 페이지 닫기 + 데이터 전달
+            },
             child: const Text("확인"),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("QR 오류"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              controller?.resumeCamera();
+              _scanned = false;
+            },
+            child: const Text("다시 시도"),
           )
         ],
       ),
@@ -77,7 +89,12 @@ class _QRScanPageState extends State<QRScanPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: _showNotificationDialog,
+            onPressed: () {
+              String msg = rentalStatus == "대여"
+                  ? "대여했습니다.\n반납 예정일은 ${returnDueDate?.toLocal().toString().split(' ')[0]}입니다."
+                  : "반납했습니다.";
+              _showNotificationDialog("알림", msg);
+            },
           )
         ],
       ),
@@ -95,25 +112,32 @@ class _QRScanPageState extends State<QRScanPage> {
               onQRViewCreated: (ctrl) {
                 controller = ctrl;
                 controller?.scannedDataStream.listen((scanData) {
-                  if (!_scanned) {
-                    _scanned = true;
-                    controller?.pauseCamera();
+                  if (_scanned) return;
+                  _scanned = true;
+                  controller?.pauseCamera();
 
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text("대여 완료"),
-                        content: Text("${widget.itemName} 대여가 완료되었습니다."),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); // 팝업 닫기
-                              Navigator.pop(context); // QR 페이지 닫기
-                            },
-                            child: const Text("확인"),
-                          )
-                        ],
-                      ),
+                  final code = scanData.code ?? "";
+                  print("✅ 스캔된 QR: $code");
+
+                  if (widget.isRenting && code.startsWith("rental:")) {
+                    final returnDate = returnDueDate?.toLocal().toString().split(' ')[0] ?? '';
+                    final message = "${widget.itemName} 대여가 완료되었습니다.\n반납 예정일은 $returnDate입니다.";
+
+                    _showNotificationDialog(
+                      "대여 완료",
+                      message,
+                      returnData: {
+                        'name': widget.itemName,
+                        'dueDate': returnDate,
+                      },
+                    );
+                  } else if (!widget.isRenting && code.startsWith ("return:")) {
+                    _showNotificationDialog("반납 완료", "${widget.itemName} 반납이 완료되었습니다.", returnFlag: true);
+                  } else {
+                    _showErrorDialog(
+                      widget.isRenting
+                          ? "이건 반납용 QR입니다.\n물품에 붙은 대여용 QR을 스캔해주세요."
+                          : "이건 대여용 QR입니다.\n반납함에 있는 QR을 스캔해주세요.",
                     );
                   }
                 });

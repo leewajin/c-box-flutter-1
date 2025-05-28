@@ -17,7 +17,6 @@ class _RentalPageState extends State<RentalPage> {
 
   String selectedCollege = '문과대학';
   String searchText = '';
-
   final TextEditingController _itemController = TextEditingController();
 
   final Map<String, List<String>> rentalItems = {
@@ -120,8 +119,9 @@ class _RentalPageState extends State<RentalPage> {
                     leading: const Icon(Icons.inventory),
                     title: Text(item),
                     trailing: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        // ✅ QR 페이지에서 결과를 받아오기
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => QRScanPage(
@@ -130,6 +130,11 @@ class _RentalPageState extends State<RentalPage> {
                             ),
                           ),
                         );
+
+                        // ✅ 대여 완료되었을 경우 rental_status_page에 전달
+                        if (result != null && result is Map<String, String>) {
+                          Navigator.pop(context, result);
+                        }
                       },
                       child: const Text('대여하기'),
                     ),
