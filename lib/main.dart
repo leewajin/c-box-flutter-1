@@ -21,11 +21,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Pretendard',
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white, // <- AppBar는 이걸 따름!
+        ),
       ),
       routes: {
         '/': (context) => SplashPage(),
-      //  '/login': (context) => const LoginPage(),
-      //  '/signup': (context) => const SignupPage(),
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const SignupPage(),
         '/home_menu_page': (context) => const HomeMenuPage(),
       },
       debugShowCheckedModeBanner: false,

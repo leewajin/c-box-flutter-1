@@ -63,7 +63,13 @@ class _SignupPageState extends State<SignupPage> {
             TextField(controller: _phoneController, decoration: const InputDecoration(labelText: "전화번호")),
             TextField(controller: _emailController, decoration: const InputDecoration(labelText: "이메일")),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: _signup, child: const Text("회원가입")),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,  // 버튼 배경색
+                  foregroundColor: Colors.white,   // 버튼 텍스트 색
+                ),
+                onPressed: _signup,
+                child: const Text("회원가입")),
           ],
         ),
       ),

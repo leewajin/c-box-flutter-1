@@ -52,10 +52,20 @@ class _LoginPageState extends State<LoginPage> {
             TextField(controller: _idController, decoration: const InputDecoration(labelText: "아이디")),
             TextField(controller: _pwController, decoration: const InputDecoration(labelText: "비밀번호"), obscureText: true),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: _login, child: const Text("로그인")),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,  // 버튼 배경색
+                  foregroundColor: Colors.white,   // 버튼 텍스트 색
+                ),
+                onPressed: _login,
+                child: const Text("로그인")),
             TextButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,  // 버튼 배경색
+                foregroundColor: Colors.white,   // 버튼 텍스트 색
+              ),
               onPressed: () => Navigator.pushNamed(context, '/signup'),
-              child: const Text("회원가입 하러가기"),
+              child: const Text("회원가입"),
             )
           ],
         ),

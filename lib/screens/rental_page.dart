@@ -95,6 +95,10 @@ class _RentalPageState extends State<RentalPage> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,  // 버튼 배경색
+                    foregroundColor: Colors.white,   // 버튼 텍스트 색
+                  ),
                   onPressed: () {
                     final newItem = _itemController.text.trim();
                     if (newItem.isNotEmpty) {
@@ -125,6 +129,10 @@ class _RentalPageState extends State<RentalPage> {
                     leading: const Icon(Icons.inventory),
                     title: Text(item),
                     trailing: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.indigo,  // 버튼 배경색
+                        foregroundColor: Colors.white,   // 버튼 텍스트 색
+                      ),
                       onPressed: () async {
                         // ✅ QR 페이지에서 결과를 받아오기
                         final result = await Navigator.push(
