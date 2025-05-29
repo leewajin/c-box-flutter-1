@@ -5,7 +5,6 @@ import '../widgets/bottom_nav_bar.dart';
 import '../widgets/hot_post_card.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../screens/post_detail_page.dart';
-import '../screens/message_list_page.dart';
 import '../screens/post_create_page.dart';
 
 class MissionHome extends StatelessWidget {
