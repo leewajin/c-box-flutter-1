@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/message_item.dart';
+import '../widgets/custom_app_bar_title.dart';
 import 'chat_page.dart';
 
 class MessageListPage extends StatelessWidget {
@@ -33,7 +34,7 @@ class MessageListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('쪽지 목록'),
+        title: const CustomAppBarTitle(),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
