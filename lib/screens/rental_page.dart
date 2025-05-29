@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/custom_app_bar_title.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -31,7 +32,12 @@ class _RentalPageState extends State<RentalPage> {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("대여")),
+      appBar: AppBar(
+        title: const CustomAppBarTitle(),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

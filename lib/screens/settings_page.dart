@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'app_intro_page.dart';
 import 'developer_page.dart';
 import 'contact_page.dart';
+import '../widgets/custom_app_bar_title.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -11,14 +12,10 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('설정'),
+        title: const CustomAppBarTitle(),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: ListView(
         children: [
