@@ -70,6 +70,10 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,  // 버튼 배경색
+                    foregroundColor: Colors.white,   // 버튼 텍스트 색
+                  ),
                   onPressed: () async {
                     final result = await Navigator.push(
                       context,
@@ -88,6 +92,10 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                   child: const Text("대여하러 가기"),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,  // 버튼 배경색
+                    foregroundColor: Colors.white,   // 버튼 텍스트 색
+                  ),
                   onPressed: () async {
                     await Navigator.push(
                       context,
