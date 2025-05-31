@@ -3,11 +3,20 @@ import 'package:c_box/screens/login_page.dart';
 import 'package:c_box/screens/signup_page.dart';
 import 'package:c_box/screens/splash.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/category_provider.dart';
 import 'screens/mission_home.dart';
 
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+      ],
+      child: const MyApp(), // 기존 앱 위젯
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

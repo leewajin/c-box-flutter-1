@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widgets/category_tab.dart';
+import '../widgets/category_tab_bar.dart';
 import '../widgets/post_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/hot_post_card.dart';
+import '../widgets/search_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../screens/post_detail_page.dart';
 import '../screens/post_create_page.dart';
@@ -79,36 +80,12 @@ class MainContent extends StatelessWidget {
         const SizedBox(height: 16),
 
         // 2) 검색창
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: TextField(
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search),
-              hintText: '검색',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Colors.grey[200],
-            ),
-          ),
-        ),
+        const CustomSearchBar(),
 
         // 3) 카테고리 탭
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              CategoryTab(title: '전체', isSelected: true),
-              CategoryTab(title: '요청'),
-              CategoryTab(title: '수업'),
-              CategoryTab(title: '기타'),
-            ],
-          ),
+        const CategoryTabBar(
+          categories: ['전체', '요청', '수업', '기타'],
         ),
-        SizedBox(height: 16),
 
         // 4) 게시글 리스트
         Expanded(
