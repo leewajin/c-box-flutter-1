@@ -17,6 +17,7 @@ class CategoryTab extends StatelessWidget {
     return GestureDetector(
       onTap: onTap, // ✅ 탭 이벤트 연결
       child: Container(
+        alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? Colors.indigo : Colors.transparent,
@@ -24,6 +25,7 @@ class CategoryTab extends StatelessWidget {
         ),
         child: Text(
           title,
+          textAlign: TextAlign.center,
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black,
             fontWeight: FontWeight.bold,
