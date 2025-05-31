@@ -3,6 +3,7 @@ import 'settings_page.dart';
 import 'post_list_page.dart';      // 내 게시글 화면
 import 'rental_status_page.dart'; // 대여현황 화면
 import '../widgets/custom_app_bar_title.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -85,6 +86,7 @@ class MyPage extends StatelessWidget {
           const Divider(height: 1),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 
