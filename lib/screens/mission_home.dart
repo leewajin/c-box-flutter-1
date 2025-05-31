@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/category_tab.dart';
+import '../widgets/category_tab_bar.dart';
 import '../widgets/post_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/hot_post_card.dart';
@@ -83,19 +83,9 @@ class MainContent extends StatelessWidget {
         const CustomSearchBar(),
 
         // 3) 카테고리 탭
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              CategoryTab(title: '전체', isSelected: true),
-              CategoryTab(title: '요청'),
-              CategoryTab(title: '수업'),
-              CategoryTab(title: '기타'),
-            ],
-          ),
+        const CategoryTabBar(
+          categories: ['전체', '요청', '수업', '기타'],
         ),
-        SizedBox(height: 16),
 
         // 4) 게시글 리스트
         Expanded(
