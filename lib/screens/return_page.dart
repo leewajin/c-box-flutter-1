@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'rental_qr_page.dart';
 import '../widgets/custom_app_bar_title.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class ReturnPage extends StatelessWidget {
   final List<Map<String, String>> myRentals;
@@ -56,6 +57,7 @@ class ReturnPage extends StatelessWidget {
           );
         },
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/message_item.dart';
 import '../widgets/custom_app_bar_title.dart';
+import '../widgets/bottom_nav_bar.dart';
 import 'chat_page.dart';
 
 class MessageListPage extends StatelessWidget {
@@ -62,6 +63,7 @@ class MessageListPage extends StatelessWidget {
           );
         },
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

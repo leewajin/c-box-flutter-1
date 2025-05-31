@@ -4,6 +4,7 @@ import 'app_intro_page.dart';
 import 'developer_page.dart';
 import 'contact_page.dart';
 import '../widgets/custom_app_bar_title.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -102,6 +103,7 @@ class SettingsPage extends StatelessWidget {
           const Divider(height: 1),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 
