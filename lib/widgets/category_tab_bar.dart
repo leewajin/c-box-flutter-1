@@ -12,6 +12,28 @@ class CategoryTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final selected = context.watch<CategoryProvider>().selected;
 
+    if (categories.length <= 4) {
+      // 항목이 적을 때는 Row로 균등 분배
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: categories.map((title) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: CategoryTab(
+                  title: title,
+                  isSelected: title == selected,
+                  onTap: () => context.read<CategoryProvider>().select(title),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+
+    // 항목이 많을 때는 스크롤
     return SizedBox(
       height: 48,
       child: ListView.separated(
