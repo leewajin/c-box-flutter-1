@@ -17,8 +17,18 @@ class MissionHome extends StatefulWidget {
 
 class _MissionHomeState extends State<MissionHome> {
   final List<Map<String, dynamic>> posts = [
-    {'category': '수업', 'title': '이산구조 시험 언제임?', 'comments': 3},
-    {'category': '요청', 'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ', 'comments': 1},
+    {
+      'category': '수업',
+      'title': '이산구조 시험 언제임?',
+      'comments': 3,
+      'createdAt': DateTime.now().subtract(const Duration(minutes: 30)),
+    },
+    {
+      'category': '요청',
+      'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ',
+      'comments': 1,
+      'createdAt': DateTime.now().subtract(const Duration(hours:2)),
+    },
   ];
 
   void _navigateToCreatePage() async {
@@ -109,7 +119,9 @@ class MainContent extends StatelessWidget {
 
         // 동적으로 게시글 렌더링
         Expanded(
-          child: ListView.separated(
+          child: posts.isEmpty
+            ? const Center(child: Text('게시글이 없습니다.'))
+            : ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: posts.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
