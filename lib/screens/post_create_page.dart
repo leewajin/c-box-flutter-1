@@ -86,14 +86,19 @@ class _PostCreatePageState extends State<PostCreatePage> {
                       _contentController.text.isEmpty ||
                       _selectedCategory == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('제목, 내용, 카테고리를 모두 입력하세요!')),
+                      const SnackBar(content: Text('제목, 내용, 카테고리를 모두 입력하세요!')),
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('게시물이 등록되었습니다!')),
-                    );
-                    Navigator.pop(context);
+                    final newPost = {
+                      'title': _titleController.text,
+                      'content': _contentController.text,
+                      'category': _selectedCategory!,
+                      'createdAt': DateTime.now().toString(),
+                      'allowComments': _allowComments,
+                      'comments': 0,
+                    };
+
+                    Navigator.pop(context, newPost); // 🎉 글 정보를 pop으로 함께 전달!
                   }
                 },
                 style: ElevatedButton.styleFrom(
