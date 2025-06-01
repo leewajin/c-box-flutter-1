@@ -119,6 +119,9 @@ class MainContent extends StatelessWidget {
                 category: post['category'],
                 title: post['title'],
                 comments: post['comments'] ?? 0,
+                createdAt: post['createdAt'] is String
+                    ? DateTime.parse(post['createdAt'])
+                    : post['createdAt'] as DateTime,
               );
             },
           ),
