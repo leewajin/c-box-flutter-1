@@ -5,13 +5,28 @@ class PostCard extends StatelessWidget {
   final String category;
   final String title;
   final int comments;
+  final DateTime createdAt;
 
   const PostCard({
     super.key,
     required this.category,
     required this.title,
     required this.comments,
+    required this.createdAt,
   });
+
+  String timeAgo(DateTime dateTime) {
+    final Duration diff = DateTime.now().difference(dateTime);
+
+    if (diff.inSeconds < 60) return '방금 전';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}분 전';
+    if (diff.inHours < 24) return '${diff.inHours}시간 전';
+    if (diff.inDays == 1) return '어제';
+    if (diff.inDays < 7) return '${diff.inDays}일 전';
+    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}주 전';
+    if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}달 전';
+    return '${(diff.inDays / 365).floor()}년 전';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +60,7 @@ class PostCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          const Text('작성자   1시간 전'),
+          Text('작성자   ${timeAgo(createdAt)}'),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
