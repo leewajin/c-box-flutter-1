@@ -11,7 +11,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Timer(Duration(seconds: 2), () {
-      Navigator.pushReplacementNamed(context, '/home_menu_page');
+      Navigator.pushReplacementNamed(context, '/login');
     });
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'app_intro_page.dart';
 import 'developer_page.dart';
@@ -82,13 +83,26 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          const Divider(height: 1),
           _buildTile(
             context,
             icon: Icons.logout,
             title: '로그아웃',
-            onTap: () {
-              // TODO: 로그아웃 처리
+            onTap: () async {
+              final response = await http.put(
+                Uri.parse('http://10.0.2.2:8080/users/logout'),
+              );
+
+              if (response.statusCode == 200) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('로그아웃 성공')),
+                );
+                // 로그인 페이지로 이동 (필요시 수정)
+                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('로그아웃 실패')),
+                );
+              }
             },
           ),
           const Divider(height: 1),
