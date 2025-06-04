@@ -17,8 +17,15 @@ class PostDetailPage extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+
+      // ✅ 키보드 대응을 위한 스크롤 래퍼
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16, // ✅ 키보드 올라올 때 하단 밀림 방지
+          top: 16,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -93,14 +100,15 @@ class PostDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 댓글 리스트 (지금은 예제 하나지만 ListView로 확장 가능!)
+            // 댓글 리스트
             const CommentItem(
               username: '사용자2',
               comment: '저요! 어디에 계신가요?',
               time: '58분 전',
             ),
 
-            const Spacer(),
+            const SizedBox(height: 24), // ✅ 하단 여백 대체
+            // ❌ Spacer()는 SingleChildScrollView 안에서는 사용 안 함
 
             // 쪽지 보내기 버튼
             SizedBox(
@@ -115,7 +123,7 @@ class PostDetailPage extends StatelessWidget {
                 ),
                 child: const Text(
                   '쪽지 보내기',
-                  style: const TextStyle(fontSize: 16, color: Colors.white)
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
