@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'rental_qr_page.dart';
-import '../widgets/custom_app_bar_title.dart';
-import '../widgets/bottom_nav_bar.dart';
 
 class ReturnPage extends StatelessWidget {
   final List<Map<String, String>> myRentals;
@@ -16,12 +14,7 @@ class ReturnPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const CustomAppBarTitle(),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text("반납하기")),
       body: myRentals.isEmpty
           ? const Center(child: Text("반납할 물품이 없습니다."))
           : ListView.builder(
@@ -57,7 +50,6 @@ class ReturnPage extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

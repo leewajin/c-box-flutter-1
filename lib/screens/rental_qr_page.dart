@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'home_menu_page.dart';
 import 'my_page.dart';
-import '../widgets/custom_app_bar_title.dart';
 
 class QRScanPage extends StatefulWidget {
   final String itemName;
@@ -86,10 +85,18 @@ class _QRScanPageState extends State<QRScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const CustomAppBarTitle(),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const Text("C:BOX"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              String msg = rentalStatus == "대여"
+                  ? "대여했습니다.\n반납 예정일은 ${returnDueDate?.toLocal().toString().split(' ')[0]}입니다."
+                  : "반납했습니다.";
+              _showNotificationDialog("알림", msg);
+            },
+          )
+        ],
       ),
       body: Column(
         children: [
