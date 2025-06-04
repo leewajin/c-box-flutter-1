@@ -11,7 +11,7 @@ class HomeMenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('C:BOX', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('C:BOX', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold) ),
         centerTitle: true,
       ),
       body: Padding(

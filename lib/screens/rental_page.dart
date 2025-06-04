@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
-import 'utils/shared_preferences_util.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -18,39 +17,25 @@ class _RentalPageState extends State<RentalPage> {
 
   String selectedCollege = '문과대학';
   String searchText = '';
-  bool isAdmin = false;
+  final TextEditingController _itemController = TextEditingController();
 
-  final TextEditingController _itemNameController = TextEditingController();
-  final TextEditingController _itemCountController = TextEditingController();
-
-  Map<String, List<Map<String, dynamic>>> rentalItems = {
-    '문과대학': [],
-    '공과대학': [],
+  final Map<String, List<String>> rentalItems = {
+    '문과대학': ['우산', '보조배터리'],
+    '공과대학': ['드라이버', '충전기'],
   };
 
   @override
-  void initState() {
-    super.initState();
-    _loadUserRole();
-  }
-
-  Future<void> _loadUserRole() async {
-    final role = await SharedPreferencesUtil.getUserRole();
-    setState(() {
-      isAdmin = role == 'admin';
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> filteredItems = (rentalItems[selectedCollege] ?? [])
-        .where((item) => item['name'].toString().contains(searchText))
+    final List<String> filteredItems = (rentalItems[selectedCollege] ?? [])
+        .where((item) => item.contains(searchText))
         .toList();
 
     return Scaffold(
       appBar: AppBar(title: const Text("대여")),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 📚 단과대 리스트
           SizedBox(
             height: 48,
             child: ListView.builder(
@@ -72,6 +57,8 @@ class _RentalPageState extends State<RentalPage> {
             ),
           ),
           const SizedBox(height: 8),
+
+          // 🔍 검색창
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
@@ -85,7 +72,42 @@ class _RentalPageState extends State<RentalPage> {
               },
             ),
           ),
+
+          // ➕ 물품 등록
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _itemController,
+                    decoration: const InputDecoration(
+                      hintText: '새 물품 이름 입력',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    final newItem = _itemController.text.trim();
+                    if (newItem.isNotEmpty) {
+                      setState(() {
+                        rentalItems[selectedCollege] ??= [];
+                        rentalItems[selectedCollege]!.add(newItem);
+                        _itemController.clear();
+                      });
+                    }
+                  },
+                  child: const Text("등록"),
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 12),
+
+          // 🎒 물품 목록
           Expanded(
             child: ListView.builder(
               itemCount: filteredItems.length,
@@ -95,22 +117,25 @@ class _RentalPageState extends State<RentalPage> {
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: ListTile(
                     leading: const Icon(Icons.inventory),
-                    title: Text("${item['name']} (${item['count']}개 남음)"),
+                    title: Text(item),
                     trailing: ElevatedButton(
-                      onPressed: item['count'] > 0
-                          ? () {
-                        Navigator.push(
+                      onPressed: () async {
+                        // ✅ QR 페이지에서 결과를 받아오기
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => QRScanPage(
-                              itemName: item['name'],
-                              itemId: item['id'] ?? 0,
+                              itemName: item,
                               isRenting: true,
                             ),
                           ),
                         );
-                      }
-                          : null,
+
+                        // ✅ 대여 완료되었을 경우 rental_status_page에 전달
+                        if (result != null && result is Map<String, String>) {
+                          Navigator.pop(context, result);
+                        }
+                      },
                       child: const Text('대여하기'),
                     ),
                   ),
@@ -120,63 +145,6 @@ class _RentalPageState extends State<RentalPage> {
           ),
         ],
       ),
-      floatingActionButton: isAdmin
-          ? FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: const Text("물품 등록"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: _itemNameController,
-                    decoration: const InputDecoration(labelText: "물품 이름"),
-                  ),
-                  TextField(
-                    controller: _itemCountController,
-                    decoration: const InputDecoration(labelText: "수량"),
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _itemNameController.clear();
-                    _itemCountController.clear();
-                  },
-                  child: const Text("취소"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final name = _itemNameController.text.trim();
-                    final count = int.tryParse(_itemCountController.text) ?? 0;
-                    if (name.isNotEmpty && count > 0) {
-                      setState(() {
-                        rentalItems[selectedCollege] ??= [];
-                        rentalItems[selectedCollege]!.add({
-                          'name': name,
-                          'count': count,
-                          'id': DateTime.now().millisecondsSinceEpoch,
-                        });
-                        _itemNameController.clear();
-                        _itemCountController.clear();
-                      });
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("등록"),
-                ),
-              ],
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
-      )
-          : null,
       bottomNavigationBar: const BottomNavBar(),
     );
   }

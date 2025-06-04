@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
@@ -25,7 +26,10 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     if (response.statusCode == 200) {
-      // ✅ 로그인 성공 시 홈화면으로 이동
+      // ✅ userId 저장
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', _idController.text);
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("로그인 성공")),
@@ -33,13 +37,11 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushNamed(context, '/home_menu_page');
       }
     } else {
-      // ❌ 로그인 실패 메시지
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("로그인 실패")),
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +51,31 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(controller: _idController, decoration: const InputDecoration(labelText: "아이디")),
-            TextField(controller: _pwController, decoration: const InputDecoration(labelText: "비밀번호"), obscureText: true),
+            TextField(
+              controller: _idController,
+              decoration: const InputDecoration(labelText: "아이디"),
+            ),
+            TextField(
+              controller: _pwController,
+              decoration: const InputDecoration(labelText: "비밀번호"),
+              obscureText: true,
+            ),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: _login, child: const Text("로그인")),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: _login,
+              child: const Text("로그인"),
+            ),
             TextButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.indigo,
+                foregroundColor: Colors.white,
+              ),
               onPressed: () => Navigator.pushNamed(context, '/signup'),
-              child: const Text("회원가입 하러가기"),
+              child: const Text("회원가입"),
             )
           ],
         ),

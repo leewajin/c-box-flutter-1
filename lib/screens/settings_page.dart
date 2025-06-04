@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'app_intro_page.dart';
 import 'developer_page.dart';
 import 'contact_page.dart';
+import '../widgets/custom_app_bar_title.dart';
+import '../widgets/bottom_nav_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -11,14 +15,10 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('설정'),
+        title: const CustomAppBarTitle(),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: ListView(
         children: [
@@ -84,27 +84,65 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-          const Divider(height: 1),
           _buildTile(
             context,
             icon: Icons.logout,
             title: '로그아웃',
-            onTap: () {
-              // TODO: 로그아웃 처리
+            onTap: () async {
+              final response = await http.put(
+                Uri.parse('http://10.0.2.2:8080/users/logout'),
+              );
+
+              if (response.statusCode == 200) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('로그아웃 성공')),
+                );
+                // 로그인 페이지로 이동 (필요시 수정)
+                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('로그아웃 실패')),
+                );
+              }
             },
           ),
-          const Divider(height: 1),
           _buildTile(
             context,
             icon: Icons.delete_forever,
             title: '회원탈퇴',
-            onTap: () {
-              // TODO: 회원탈퇴 처리
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              final userId = prefs.getString('userId');
+
+              if (userId == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('유저 정보가 없습니다. 다시 로그인해주세요.')),
+                );
+                return;
+              }
+
+              final response = await http.delete(
+                Uri.parse('http://10.0.2.2:8080/users/delete/$userId'),
+              );
+
+              if (response.statusCode == 200) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('회원 탈퇴 성공')),
+                );
+                await prefs.clear(); // 저장된 유저 정보 초기화
+                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('회원 탈퇴 실패')),
+                );
+              }
             },
           ),
+
           const Divider(height: 1),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 

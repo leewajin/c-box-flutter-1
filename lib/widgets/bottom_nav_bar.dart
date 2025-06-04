@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../screens/my_page.dart';
+import '../screens/rental_status_page.dart';
+import '../screens/mission_home.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -13,16 +14,17 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   void _onItemTapped(int index) {
     if (index == 1) {
-      // 내 프로필 버튼 눌렀을 때 my_page로 이동!
-      //내 프로필 탭
+      // 미션스쿨로 이동
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const MyPage()),
+        MaterialPageRoute(builder: (_) => const MissionHome()),
       );
     } else {
-      setState(() {
-        _selectedIndex = index;
-      });
+      // 한남렌탈 탭 눌렀을 때
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const RentalStatusPage()),
+      );
     }
   }
 
@@ -33,12 +35,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
       onTap: _onItemTapped,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: '홈',
+          icon: Icon(Icons.shopping_bag), // 렌탈 아이콘
+          label: '한남렌탈',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: '마이페이지',
+          icon: Icon(Icons.school), // 학교 아이콘
+          label: '미션스쿨',
         ),
       ],
       backgroundColor: Colors.white,

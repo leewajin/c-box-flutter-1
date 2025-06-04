@@ -17,7 +17,7 @@ class _SignupPageState extends State<SignupPage> {
   final _emailController = TextEditingController();
 
   Future<void> _signup() async {
-    final url = Uri.parse('http://10.0.2.2/users/signup');
+    final url = Uri.parse('http://10.0.2.2:8080/users/signup');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -28,7 +28,7 @@ class _SignupPageState extends State<SignupPage> {
         'phoneNumber': _phoneController.text,
         'email': _emailController.text,
         'role': 'USER',
-        'creatAt': DateTime.now().toIso8601String(),
+        'createdAt': DateTime.now().toIso8601String(),
       }),
     );
 
@@ -63,7 +63,13 @@ class _SignupPageState extends State<SignupPage> {
             TextField(controller: _phoneController, decoration: const InputDecoration(labelText: "전화번호")),
             TextField(controller: _emailController, decoration: const InputDecoration(labelText: "이메일")),
             const SizedBox(height: 20),
-            ElevatedButton(onPressed: _signup, child: const Text("회원가입")),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,  // 버튼 배경색
+                  foregroundColor: Colors.white,   // 버튼 텍스트 색
+                ),
+                onPressed: _signup,
+                child: const Text("회원가입")),
           ],
         ),
       ),

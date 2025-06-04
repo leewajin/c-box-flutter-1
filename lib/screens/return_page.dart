@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/rental_qr_page.dart';
+import 'rental_qr_page.dart';
 
 class ReturnPage extends StatelessWidget {
   final List<Map<String, String>> myRentals;
@@ -34,15 +34,14 @@ class ReturnPage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (_) => QRScanPage(
                         itemName: item['name'] ?? '',
-                        itemId: 0, // 반납용은 아이템 ID 필요 없음
                         isRenting: false,
                       ),
                     ),
                   );
 
                   if (result == true) {
-                    onReturnComplete(index); // 삭제 콜백 실행
-                    Navigator.pop(context);  // ReturnPage 종료
+                    onReturnComplete(index); // 부모에서 리스트에서 삭제
+                    Navigator.pop(context); // ReturnPage 종료
                   }
                 },
                 child: const Text("반납하기"),
