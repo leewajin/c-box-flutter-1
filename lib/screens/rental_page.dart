@@ -10,7 +10,6 @@ class RentalPage extends StatefulWidget {
   State<RentalPage> createState() => _RentalPageState();
 }
 
-
 class _RentalPageState extends State<RentalPage> {
   final List<String> colleges = [
     '문과대학', '사범대학', '공과대학', '스마트융합대학', '경상대학',

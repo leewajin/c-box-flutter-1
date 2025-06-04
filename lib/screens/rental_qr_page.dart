@@ -6,7 +6,6 @@ import 'utils/shared_preferences_util.dart';
 import 'home_menu_page.dart';
 import 'my_page.dart';
 
-
 class QRScanPage extends StatefulWidget {
   final String itemName;
   final int itemId;
