@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.1.2
+  shared_preferences: ^2.2.2
   qr_code_scanner:
     git:
       url: https://github.com/juliuscanute/qr_code_scanner.git

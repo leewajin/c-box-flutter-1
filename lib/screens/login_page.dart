@@ -26,15 +26,23 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     if (response.statusCode == 200) {
-      // ✅ userId 저장
+      final data = jsonDecode(response.body);
+      final role = data['role']; // ✅ role 추출
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userId', _idController.text);
+      await prefs.setString('role', role); // 필요하면 저장
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("로그인 성공")),
-        );
-        Navigator.pushNamed(context, '/home_menu_page');
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(data['message'] ?? '로그인 성공')),
+      );
+
+      // ✅ 역할에 따라 페이지 이동
+      if (role == 'ADMIN') {
+        Navigator.pushReplacementNamed(context, '/home_menu_page');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home_menu_page');
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -42,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
