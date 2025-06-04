@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../screens/rental_qr_page.dart'; // QRScanPage import
+import '../screens/rental_qr_page.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -37,8 +37,6 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-
-          // ✅ 대여 목록 표시
           if (myRentals.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -63,10 +61,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                 },
               ),
             ),
-
           const SizedBox(height: 16),
-
-          // ✅ 대여 / 반납 버튼
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -81,7 +76,6 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                       ),
                     );
 
-                    // ✅ QRScanPage에서 Navigator.pop(context, {name, dueDate})로 넘겨주는 경우 처리
                     if (result != null && result is Map<String, String>) {
                       setState(() {
                         myRentals.add(result);
@@ -92,7 +86,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await Navigator.push(
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => ReturnPage(
