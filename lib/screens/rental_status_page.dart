@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../screens/rental_qr_page.dart'; // QRScanPage import
 import '../widgets/custom_app_bar_title.dart';
+import 'mission_home.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -15,6 +15,15 @@ class RentalStatusPage extends StatefulWidget {
 class _RentalStatusPageState extends State<RentalStatusPage> {
   List<Map<String, String>> myRentals = []; // 대여중인 물품 리스트
 
+  void _onBottomTapped(int index) {
+    if (index == 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MissionHome()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +31,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // 뒤로 가기 기능
+            Navigator.pop(context); // 뒤로 가기
           },
         ),
         title: const CustomAppBarTitle(),
@@ -84,7 +93,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                       ),
                     );
 
-                    // ✅ QRScanPage에서 Navigator.pop(context, {name, dueDate})로 넘겨주는 경우 처리
+                    // ✅ QRScanPage에서 Navigator.pop(context, {name, dueDate})로 넘겨주는 경우
                     if (result != null && result is Map<String, String>) {
                       setState(() {
                         myRentals.add(result);
@@ -116,7 +125,24 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomNavBar(),
+
+      // ✅ 하단 네비게이션 바
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: _onBottomTapped,
+        selectedItemColor: Colors.indigo,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: '한남렌탈',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: '미션스쿨',
+          ),
+        ],
+      ),
     );
   }
 }

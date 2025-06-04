@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../widgets/category_tab_bar.dart';
 import '../widgets/post_card.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../widgets/hot_post_card.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../screens/post_detail_page.dart';
 import '../screens/post_create_page.dart';
+import 'rental_status_page.dart';
 
 class MissionHome extends StatefulWidget {
   const MissionHome({super.key});
@@ -27,7 +27,7 @@ class _MissionHomeState extends State<MissionHome> {
       'category': '요청',
       'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ',
       'comments': 1,
-      'createdAt': DateTime.now().subtract(const Duration(hours:2)),
+      'createdAt': DateTime.now().subtract(const Duration(hours: 2)),
     },
   ];
 
@@ -41,13 +41,23 @@ class _MissionHomeState extends State<MissionHome> {
 
     if (result != null && result is Map<String, dynamic>) {
       setState(() {
-        posts.insert(0, result); // 새 글을 맨 위에 추가!
+        posts.insert(0, result);
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('게시물이 등록되었습니다!')),
       );
     }
+  }
+
+  void _onBottomTapped(int index) {
+    if (index == 0) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const RentalStatusPage()),
+      );
+    }
+    // index == 1은 현재 페이지, 아무 동작 X
   }
 
   @override
@@ -60,16 +70,33 @@ class _MissionHomeState extends State<MissionHome> {
         elevation: 0,
       ),
       body: MainContent(posts: posts),
-      bottomNavigationBar: const BottomNavBar(),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreatePage,
         backgroundColor: Colors.indigo,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        child: const Icon(Icons.add, size: 32, color: Colors.white,),
+        child: const Icon(Icons.add, size: 32, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+      // ✅ 하단바 추가
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
+        onTap: _onBottomTapped,
+        selectedItemColor: Colors.indigo,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: '한남렌탈',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: '미션스쿨',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -89,7 +116,6 @@ class MainContent extends StatelessWidget {
 
     return Column(
       children: [
-        // 핫게시글
         SizedBox(
           height: 140,
           child: ListView.separated(
@@ -112,16 +138,13 @@ class MainContent extends StatelessWidget {
             },
           ),
         ),
-
         const SizedBox(height: 16),
         const CustomSearchBar(),
         const CategoryTabBar(categories: ['전체', '요청', '수업', '기타']),
-
-        // 동적으로 게시글 렌더링
         Expanded(
           child: posts.isEmpty
-            ? const Center(child: Text('게시글이 없습니다.'))
-            : ListView.separated(
+              ? const Center(child: Text('게시글이 없습니다.'))
+              : ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: posts.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -142,5 +165,3 @@ class MainContent extends StatelessWidget {
     );
   }
 }
-
-
