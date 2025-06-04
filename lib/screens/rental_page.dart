@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/custom_app_bar_title.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -27,12 +28,21 @@ class _RentalPageState extends State<RentalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> filteredItems = (rentalItems[selectedCollege] ?? [])
-        .where((item) => item.contains(searchText))
-        .toList();
-
+    final List<String> filteredItems = rentalItems[selectedCollege]
+        ?.where((item) => item.contains(searchText))
+        .toList() ??
+        [];
     return Scaffold(
-      appBar: AppBar(title: const Text("대여")),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const CustomAppBarTitle(),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

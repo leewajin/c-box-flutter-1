@@ -3,6 +3,7 @@ import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../screens/rental_qr_page.dart'; // QRScanPage import
+import '../widgets/custom_app_bar_title.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -18,14 +19,16 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text("C:BOX", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("쪽지 알림", style: TextStyle(fontSize: 14)),
-          ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); // 뒤로 가기 기능
+          },
         ),
+        title: const CustomAppBarTitle(),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
