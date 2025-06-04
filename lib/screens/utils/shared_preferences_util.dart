@@ -22,6 +22,7 @@ class SharedPreferencesUtil {
     return prefs.getString(_userIdKey);
   }
 
+
   /// role 가져오기
   static Future<String?> getUserRole() async {
     final prefs = await SharedPreferences.getInstance();

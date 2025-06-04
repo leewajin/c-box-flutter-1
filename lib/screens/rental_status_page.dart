@@ -7,6 +7,7 @@ import '../screens/rental_qr_page.dart';
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
 
+
   @override
   State<RentalStatusPage> createState() => _RentalStatusPageState();
 }

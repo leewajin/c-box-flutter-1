@@ -5,6 +5,7 @@ class ReturnPage extends StatelessWidget {
   final List<Map<String, String>> myRentals;
   final Function(int) onReturnComplete;
 
+
   const ReturnPage({
     super.key,
     required this.myRentals,
