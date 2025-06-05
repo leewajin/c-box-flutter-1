@@ -23,7 +23,7 @@
 </p>
 
 ---
-###🔗 Repository
+###🔗 Repository<br>
 FE https://github.com/eongeung/c-box-flutter.git<br>
 BE https://github.com/eongeung/c-box-be.git
 
