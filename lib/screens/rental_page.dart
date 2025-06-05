@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
@@ -99,7 +100,17 @@ class _RentalPageState extends State<RentalPage> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    final role = prefs.getString('role');
+
+                    if (role != 'ADMIN') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("관리자만 등록할 수 있습니다.")),
+                      );
+                      return;
+                    }
+
                     final newItem = _itemController.text.trim();
                     if (newItem.isNotEmpty) {
                       setState(() {
@@ -111,6 +122,7 @@ class _RentalPageState extends State<RentalPage> {
                   },
                   child: const Text("등록"),
                 ),
+
               ],
             ),
           ),
