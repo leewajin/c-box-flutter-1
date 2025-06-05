@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/category_provider.dart';
 import '../widgets/rental_item_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
@@ -13,12 +15,11 @@ class RentalPage extends StatefulWidget {
 }
 
 class _RentalPageState extends State<RentalPage> {
-  final List<String> colleges = [
-    '문과대학', '사범대학', '공과대학', '스마트융합대학', '경상대학',
-    '사회과학대학', '생명·나노과학대학', '아트&디자인테크놀로지대학', '린튼글로벌스쿨', '탈메이지 교양·융합대학'
+  static const List<String> colleges = [
+    '전체', '경상대학', '공과대학', '사회과학대학', '문과대학',
+    '생명·나노과학대학', '스마트융합대학', '아트&디자인테크놀로지대학', '사범대학', 'LGS대학'
   ];
 
-  String selectedCollege = '문과대학';
   String searchText = '';
   final TextEditingController _itemController = TextEditingController();
 
@@ -29,10 +30,11 @@ class _RentalPageState extends State<RentalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> filteredItems = rentalItems[selectedCollege]
-        ?.where((item) => item.contains(searchText))
-        .toList() ??
-        [];
+    final selectedCollege = context.watch<CategoryProvider>().selected;
+    final List<String> filteredItems = (selectedCollege == '전체')
+        ? rentalItems.values.expand((items) => items).where((item) => item.contains(searchText)).toList()
+        : rentalItems[selectedCollege]?.where((item) => item.contains(searchText)).toList() ?? [];
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -47,13 +49,8 @@ class _RentalPageState extends State<RentalPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 📚 단과대 카테고리Add commentMore actions
-          const CategoryTabBar(
-              categories: [
-                '전체', '경상대학', '공과대학', '사회과학대힉', '문과대학',
-                '사회과학대학', '생명·나노과학대학', '스마트융합대학', '아트&디자인테크놀로지대학', '사범대학','LGS대학'
-              ]
-          ),
+          // 📚 단과대 카테고리
+          const CategoryTabBar(categories: colleges),
           const SizedBox(height: 8),
 
           // 🔍 검색창
