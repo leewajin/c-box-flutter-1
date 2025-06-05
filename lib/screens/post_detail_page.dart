@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import '../widgets/comment_item.dart';  // 댓글 컴포넌트 import
 
 class PostDetailPage extends StatelessWidget {
-  const PostDetailPage({super.key});
+  final String title;
+  final String category;
+  final String author; // 작성자도 나중에 필요하면 추가!
+  final String content; // 본문 내용
+
+  const PostDetailPage({
+    super.key,
+    required this.title,
+    required this.category,
+    required this.author,
+    required this.content,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +41,8 @@ class PostDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 제목
-            const Text(
-              '노트북 수리 도와주세요',
+            Text(
+              title,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -46,11 +57,11 @@ class PostDetailPage extends StatelessWidget {
                     color: Colors.blue.shade100,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text('수리'),
+                  child: Text(category),
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  '사용자1',
+                Text(
+                  author,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
@@ -58,9 +69,8 @@ class PostDetailPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // 본문 내용
-            const Text(
-              '노트북이 고장났는데 어떻게 고쳐야 할지 모르겠어요. '
-                  '수리 가능한 분 계시면 도와주셨으면 합니다.',
+            Text(
+              content,
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
