@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.1.2
   shared_preferences: ^2.2.2
   qr_code_scanner:
     git:
@@ -45,7 +44,7 @@ dependencies:
 
   # URL Launcher 추가
   url_launcher: ^6.1.7
-
+  provider: ^6.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
