@@ -24,8 +24,8 @@
 
 ---
 ###🔗 Repository<br>
-FE https://github.com/eongeung/c-box-flutter.git<br>
-BE https://github.com/eongeung/c-box-be.git
+FE https://github.com/dijam/c-box-flutter.git<br>
+BE https://github.com/dijam/c-box-be.git
 
 ---
 
