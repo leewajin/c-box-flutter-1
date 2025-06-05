@@ -3,6 +3,7 @@ import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/category_tab_bar.dart';
+import '../widgets/search_bar.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -56,19 +57,7 @@ class _RentalPageState extends State<RentalPage> {
           const SizedBox(height: 8),
 
           // 🔍 검색창
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: '물품 검색',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() => searchText = value);
-              },
-            ),
-          ),
+          const CustomSearchBar(),
 
           // ➕ 물품 등록
           Padding(
