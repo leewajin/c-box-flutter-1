@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/rental_qr_page.dart';
+import '../widgets/rental_item_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/category_tab_bar.dart';
@@ -103,36 +103,11 @@ class _RentalPageState extends State<RentalPage> {
               itemCount: filteredItems.length,
               itemBuilder: (context, index) {
                 final item = filteredItems[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: const Icon(Icons.inventory),
-                    title: Text(item),
-                    trailing: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.indigo,  // 버튼 배경색
-                        foregroundColor: Colors.white,   // 버튼 텍스트 색Add commentMore actions
-                      ),
-                      onPressed: () async {
-                        // ✅ QR 페이지에서 결과를 받아오기
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QRScanPage(
-                              itemName: item,
-                              isRenting: true,
-                            ),
-                          ),
-                        );
-
-                        // ✅ 대여 완료되었을 경우 rental_status_page에 전달
-                        if (result != null && result is Map<String, String>) {
-                          Navigator.pop(context, result);
-                        }
-                      },
-                      child: const Text('대여하기'),
-                    ),
-                  ),
+                return RentalItemCard(
+                  item: item,
+                  onRented: (result) {
+                    Navigator.pop(context, result);
+                  },
                 );
               },
             ),
