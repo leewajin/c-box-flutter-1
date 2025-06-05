@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../screens/rental_qr_page.dart';
+import 'package:provider/provider.dart';
+import '../providers/category_provider.dart';
+import '../widgets/rental_item_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
+import '../widgets/category_tab_bar.dart';
+import '../widgets/search_bar.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -11,27 +14,44 @@ class RentalPage extends StatefulWidget {
   State<RentalPage> createState() => _RentalPageState();
 }
 
+class RentalItem {
+  final String name;
+  final String college;
+  int quantity;
+
+  RentalItem({
+    required this.name,
+    required this.college,
+    required this.quantity,
+  });
+}
+
 class _RentalPageState extends State<RentalPage> {
-  final List<String> colleges = [
-    '문과대학', '사범대학', '공과대학', '스마트융합대학', '경상대학',
-    '사회과학대학', '생명·나노과학대학', '아트&디자인테크놀로지대학', '린튼글로벌스쿨', '탈메이지 교양·융합대학'
+  static const List<String> colleges = [
+    '전체', '경상대학', '공과대학', '사회과학대학', '문과대학',
+    '생명·나노과학대학', '스마트융합대학', '아트&디자인테크놀로지대학', '사범대학', 'LGS대학'
   ];
 
-  String selectedCollege = '문과대학';
   String searchText = '';
   final TextEditingController _itemController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
 
-  final Map<String, List<String>> rentalItems = {
-    '문과대학': ['우산', '보조배터리'],
-    '공과대학': ['드라이버', '충전기'],
-  };
+  List<RentalItem> allItems = [
+    RentalItem(name: '우산', college: '문과대학', quantity: 5),
+    RentalItem(name: '보조배터리', college: '문과대학', quantity: 2),
+    RentalItem(name: '드라이버', college: '공과대학', quantity: 0),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<String> filteredItems = rentalItems[selectedCollege]
-        ?.where((item) => item.contains(searchText))
-        .toList() ??
-        [];
+    final selectedCollege = context.watch<CategoryProvider>().selected;
+
+    List<RentalItem> filteredItems = allItems.where((item) {
+      final matchesCollege = selectedCollege == '전체' || item.college == selectedCollege;
+      final matchesSearch = item.name.contains(searchText);
+      return matchesCollege && matchesSearch;
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -46,27 +66,7 @@ class _RentalPageState extends State<RentalPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 📚 단과대 리스트
-          SizedBox(
-            height: 48,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: colleges.length,
-              itemBuilder: (context, index) {
-                final college = colleges[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: ChoiceChip(
-                    label: Text(college),
-                    selected: selectedCollege == college,
-                    onSelected: (_) {
-                      setState(() => selectedCollege = college);
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
+          const CategoryTabBar(categories: colleges),
           const SizedBox(height: 8),
 
           // 🔍 검색창
@@ -75,14 +75,17 @@ class _RentalPageState extends State<RentalPage> {
             child: TextField(
               decoration: const InputDecoration(
                 hintText: '물품 검색',
-                prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
-                setState(() => searchText = value);
+                setState(() {
+                  searchText = value.trim();
+                });
               },
             ),
           ),
+
+          const SizedBox(height: 8),
 
           // ➕ 물품 등록
           Padding(
@@ -90,39 +93,52 @@ class _RentalPageState extends State<RentalPage> {
             child: Row(
               children: [
                 Expanded(
+                  flex: 2,
                   child: TextField(
                     controller: _itemController,
                     decoration: const InputDecoration(
-                      hintText: '새 물품 이름 입력',
+                      hintText: '물품 이름',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 1,
+                  child: TextField(
+                    controller: _quantityController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      hintText: '수량',
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    final role = prefs.getString('role');
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    final name = _itemController.text.trim();
+                    final qtyText = _quantityController.text.trim();
+                    final quantity = int.tryParse(qtyText) ?? 0;
 
-                    if (role != 'ADMIN') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("관리자만 등록할 수 있습니다.")),
-                      );
-                      return;
-                    }
-
-                    final newItem = _itemController.text.trim();
-                    if (newItem.isNotEmpty) {
+                    if (name.isNotEmpty && quantity > 0 && selectedCollege != '전체') {
                       setState(() {
-                        rentalItems[selectedCollege] ??= [];
-                        rentalItems[selectedCollege]!.add(newItem);
+                        allItems.add(RentalItem(
+                          name: name,
+                          college: selectedCollege,
+                          quantity: quantity,
+                        ));
                         _itemController.clear();
+                        _quantityController.clear();
                       });
                     }
                   },
                   child: const Text("등록"),
                 ),
-
               ],
             ),
           ),
@@ -135,32 +151,11 @@ class _RentalPageState extends State<RentalPage> {
               itemCount: filteredItems.length,
               itemBuilder: (context, index) {
                 final item = filteredItems[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: const Icon(Icons.inventory),
-                    title: Text(item),
-                    trailing: ElevatedButton(
-                      onPressed: () async {
-                        // ✅ QR 페이지에서 결과를 받아오기
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QRScanPage(
-                              itemName: item,
-                              isRenting: true,
-                            ),
-                          ),
-                        );
-
-                        // ✅ 대여 완료되었을 경우 rental_status_page에 전달
-                        if (result != null && result is Map<String, String>) {
-                          Navigator.pop(context, result);
-                        }
-                      },
-                      child: const Text('대여하기'),
-                    ),
-                  ),
+                return RentalItemCard(
+                  item: item,
+                  onRented: (result) {
+                    Navigator.pop(context, result);
+                  },
                 );
               },
             ),

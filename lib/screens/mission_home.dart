@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/category_provider.dart';
 import '../widgets/category_tab_bar.dart';
 import '../widgets/post_card.dart';
 import '../widgets/hot_post_card.dart';
@@ -108,11 +110,36 @@ class MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedCategory = context.watch<CategoryProvider>().selected;
+
     final hotPosts = [
-      {'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ', 'subtitle': '댓글 12'},
-      {'title': '자바 스터디 하실 분 구합니다', 'subtitle': '댓글 8'},
-      {'title': '3-5시 충전기 빌려주실 분?', 'subtitle': '댓글 20'},
+      {
+        'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ',
+        'subtitle': '댓글 12',
+        'category': '요청',
+        'author': '익명1',
+        'content': '공대 3층 여자 화장실에 휴지가 다 떨어졌어요. 급해요ㅠㅠ'
+      },
+      {
+        'title': '자바 스터디 하실 분 구합니다',
+        'subtitle': '댓글 8',
+        'category': '스터디',
+        'author': '김자바',
+        'content': '자바 중급 스터디 할 사람 DM 주세요~'
+      },
+      {
+        'title': '3-5시 충전기 빌려주실 분?',
+        'subtitle': '댓글 20',
+        'category': '요청',
+        'author': '배터리0퍼',
+        'content': '아이폰 충전기 빌릴 수 있을까요? 3-5시까지 급합니다!'
+      },
     ];
+
+    // ✅ 선택된 카테고리에 따라 필터링
+    final filteredPosts = selectedCategory == '전체'
+        ? posts
+        : posts.where((post) => post['category'] == selectedCategory).toList();
 
     return Column(
       children: [
@@ -131,7 +158,14 @@ class MainContent extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const PostDetailPage()),
+                    MaterialPageRoute(
+                      builder: (_) => PostDetailPage(
+                        title: post['title']!,
+                        category: post['category']!,
+                        author: post['author']!,
+                        content: post['content']!,
+                      ),
+                    ),
                   );
                 },
               );
@@ -142,14 +176,14 @@ class MainContent extends StatelessWidget {
         const CustomSearchBar(),
         const CategoryTabBar(categories: ['전체', '요청', '수업', '기타']),
         Expanded(
-          child: posts.isEmpty
+          child: filteredPosts.isEmpty
               ? const Center(child: Text('게시글이 없습니다.'))
               : ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: posts.length,
+            itemCount: filteredPosts.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              final post = posts[index];
+              final post = filteredPosts[index];
               return PostCard(
                 category: post['category'],
                 title: post['title'],
