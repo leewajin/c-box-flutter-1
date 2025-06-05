@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
+import '../widgets/category_tab_bar.dart';
+import '../widgets/search_bar.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -45,43 +47,17 @@ class _RentalPageState extends State<RentalPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 📚 단과대 리스트
-          SizedBox(
-            height: 48,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: colleges.length,
-              itemBuilder: (context, index) {
-                final college = colleges[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: ChoiceChip(
-                    label: Text(college),
-                    selected: selectedCollege == college,
-                    onSelected: (_) {
-                      setState(() => selectedCollege = college);
-                    },
-                  ),
-                );
-              },
-            ),
+          // 📚 단과대 카테고리Add commentMore actions
+          const CategoryTabBar(
+              categories: [
+                '전체', '경상대학', '공과대학', '사회과학대힉', '문과대학',
+                '사회과학대학', '생명·나노과학대학', '스마트융합대학', '아트&디자인테크놀로지대학', '사범대학','LGS대학'
+              ]
           ),
           const SizedBox(height: 8),
 
           // 🔍 검색창
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: '물품 검색',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() => searchText = value);
-              },
-            ),
-          ),
+          const CustomSearchBar(),
 
           // ➕ 물품 등록
           Padding(
@@ -99,6 +75,10 @@ class _RentalPageState extends State<RentalPage> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,  // 버튼 배경색
+                    foregroundColor: Colors.white,   // 버튼 텍스트 색
+                  ),
                   onPressed: () {
                     final newItem = _itemController.text.trim();
                     if (newItem.isNotEmpty) {
@@ -129,6 +109,10 @@ class _RentalPageState extends State<RentalPage> {
                     leading: const Icon(Icons.inventory),
                     title: Text(item),
                     trailing: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.indigo,  // 버튼 배경색
+                        foregroundColor: Colors.white,   // 버튼 텍스트 색Add commentMore actions
+                      ),
                       onPressed: () async {
                         // ✅ QR 페이지에서 결과를 받아오기
                         final result = await Navigator.push(
