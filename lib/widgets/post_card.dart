@@ -75,7 +75,12 @@ class PostCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const PostDetailPage(),
+                      builder: (context) => PostDetailPage(
+                        title: title,
+                        category: category,
+                        author: '사용자1',  // 지금은 하드코딩이지만 나중에 동적으로!
+                        content: '노트북이 고장났는데 어떻게 고쳐야 할지 모르겠어요. 수리 가능한 분 계시면 도와주셨으면 합니다.', // 이것도 데이터로 넘길 수 있음
+                      ),
                     ),
                   );
                 },
