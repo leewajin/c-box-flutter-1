@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../widgets/comment_item.dart';  // 댓글 컴포넌트 import
+import '../widgets/comment_item.dart'; // 댓글 컴포넌트 import
 
-class PostDetailPage extends StatelessWidget {
+class PostDetailPage extends StatefulWidget {
   final String title;
   final String category;
-  final String author; // 작성자도 나중에 필요하면 추가!
-  final String content; // 본문 내용
+  final String author;
+  final String content;
 
   const PostDetailPage({
     super.key,
@@ -14,6 +14,36 @@ class PostDetailPage extends StatelessWidget {
     required this.author,
     required this.content,
   });
+
+  @override
+  State<PostDetailPage> createState() => _PostDetailPageState();
+}
+
+class _PostDetailPageState extends State<PostDetailPage> {
+  final TextEditingController _commentController = TextEditingController();
+
+  // 댓글 목록을 저장할 리스트!
+  final List<Map<String, String>> _comments = [
+    {
+      'username': '사용자2',
+      'comment': '저요! 어디에 계신가요?',
+      'time': '58분 전',
+    },
+  ];
+
+  void _addComment() {
+    final text = _commentController.text.trim();
+    if (text.isNotEmpty) {
+      setState(() {
+        _comments.insert(0, {
+          'username': '나', // 나중에 로그인 정보로 바꿔도 좋아요!
+          'comment': text,
+          'time': '방금 전',
+        });
+        _commentController.clear(); // 입력창 비우기
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +58,11 @@ class PostDetailPage extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-
-      // ✅ 키보드 대응을 위한 스크롤 래퍼
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
           left: 16,
           right: 16,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16, // ✅ 키보드 올라올 때 하단 밀림 방지
+          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
           top: 16,
         ),
         child: Column(
@@ -42,8 +70,8 @@ class PostDetailPage extends StatelessWidget {
           children: [
             // 제목
             Text(
-              title,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              widget.title,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
 
@@ -51,27 +79,26 @@ class PostDetailPage extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade100,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(category),
+                  child: Text(widget.category),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  author,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  widget.author,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // 본문 내용
+            // 본문
             Text(
-              content,
-              style: TextStyle(fontSize: 16),
+              widget.content,
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
 
@@ -90,6 +117,7 @@ class PostDetailPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: _commentController,
                     decoration: InputDecoration(
                       hintText: '댓글을 작성하세요',
                       border: OutlineInputBorder(
@@ -101,24 +129,28 @@ class PostDetailPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.indigo,
-                  child: Icon(Icons.send, color: Colors.white),
+                GestureDetector(
+                  onTap: _addComment,
+                  child: const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.indigo,
+                    child: Icon(Icons.send, color: Colors.white),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // 댓글 리스트
-            const CommentItem(
-              username: '사용자2',
-              comment: '저요! 어디에 계신가요?',
-              time: '58분 전',
-            ),
+            // 댓글 리스트 보여주기
+            ..._comments.map((comment) {
+              return CommentItem(
+                username: comment['username'] ?? '',
+                comment: comment['comment'] ?? '',
+                time: comment['time'] ?? '',
+              );
+            }).toList(),
 
-            const SizedBox(height: 24), // ✅ 하단 여백 대체
-            // ❌ Spacer()는 SingleChildScrollView 안에서는 사용 안 함
+            const SizedBox(height: 24),
 
             // 쪽지 보내기 버튼
             SizedBox(
