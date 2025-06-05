@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../screens/rental_page.dart';
 import '../screens/return_page.dart';
-import '../screens/rental_qr_page.dart'; // QRScanPage import
+import '../screens/mission_home.dart';
 import '../widgets/custom_app_bar_title.dart';
-import 'mission_home.dart';
+import '../widgets/bottom_nav_bar.dart';
+import 'utils/shared_preferences_util.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -13,14 +16,31 @@ class RentalStatusPage extends StatefulWidget {
 }
 
 class _RentalStatusPageState extends State<RentalStatusPage> {
-  List<Map<String, String>> myRentals = []; // 대여중인 물품 리스트
+  List<Map<String, dynamic>> myRentals = [];
 
-  void _onBottomTapped(int index) {
-    if (index == 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MissionHome()),
-      );
+  @override
+  void initState() {
+    super.initState();
+    fetchMyRentalStatus();
+  }
+
+  Future<void> fetchMyRentalStatus() async {
+    final userId = await SharedPreferencesUtil.getUserId();
+    final url = Uri.parse('http://localhost:8080/rental/mypage');
+
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+    });
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      setState(() {
+        myRentals = data.map((r) => r as Map<String, dynamic>)
+            .where((rental) => rental['userId'] == userId)
+            .toList();
+      });
+    } else {
+      print('불러오기 실패: ${response.statusCode}');
     }
   }
 
@@ -28,119 +48,165 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // 뒤로 가기
-          },
-        ),
         title: const CustomAppBarTitle(),
         backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
+        foregroundColor: Colors.black,
+        elevation: 1,
       ),
+      bottomNavigationBar: const BottomNavBar(),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              "대여 중인 물품",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: const [
+                Text("📦 대여중인 물품", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
             ),
           ),
-
-          // ✅ 대여 목록 표시
-          if (myRentals.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text("현재 대여 중인 물품이 없습니다."),
-            )
-          else
-            Expanded(
-              child: ListView.builder(
-                itemCount: myRentals.length,
-                itemBuilder: (context, index) {
-                  final item = myRentals[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.inventory),
-                        title: Text(item['name'] ?? ''),
-                        subtitle: Text("반납일: ${item['dueDate']}"),
+          const SizedBox(height: 12),
+          Expanded(
+            child: myRentals.isEmpty
+                ? const Center(child: Text("대여중인 물품이 없습니다."))
+                : ListView.builder(
+              itemCount: myRentals.length,
+              itemBuilder: (context, index) {
+                final rental = myRentals[index];
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
                       ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          rental['item'] ?? rental['name'] ?? '이름 없음',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "반납 예정일: ${rental['dueDate']?.substring(0, 10) ?? 'N/A'}",
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "상태: ${rental['statusMessage'] ?? ''}",
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ReturnPage(
+                                    myRentals: myRentals,
+                                    onReturnComplete: (removedIndex) {
+                                      setState(() {
+                                        myRentals.removeAt(removedIndex);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.indigo,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text("반납하기"),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-
+          ),
           const SizedBox(height: 16),
-
-          // ✅ 대여 / 반납 버튼
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const RentalPage(),
-                      ),
-                    );
-
-                    // ✅ QRScanPage에서 Navigator.pop(context, {name, dueDate})로 넘겨주는 경우
-                    if (result != null && result is Map<String, String>) {
-                      setState(() {
-                        myRentals.add(result);
-                      });
-                    }
-                  },
-                  child: const Text("대여하러 가기"),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ReturnPage(
-                          myRentals: myRentals,
-                          onReturnComplete: (index) {
-                            setState(() {
-                              myRentals.removeAt(index);
-                            });
-                          },
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const RentalPage(),
                         ),
+                      );
+                      if (result != null && result is Map<String, String>) {
+                        setState(() {
+                          myRentals.add(result);
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                    label: const Text("대여하러 가기"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                  child: const Text("반납하러 가기"),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ReturnPage(
+                            myRentals: myRentals,
+                            onReturnComplete: (index) {
+                              setState(() {
+                                myRentals.removeAt(index);
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.assignment_return),
+                    label: const Text("반납하러 가기"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-
-      // ✅ 하단 네비게이션 바
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: _onBottomTapped,
-        selectedItemColor: Colors.indigo,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: '한남렌탈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: '미션스쿨',
-          ),
+          const SizedBox(height: 16),
         ],
       ),
     );
