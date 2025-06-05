@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import '../screens/rental_qr_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
@@ -28,43 +25,12 @@ class _RentalPageState extends State<RentalPage> {
     '공과대학': ['드라이버', '충전기'],
   };
 
-  Future<void> postRentalToBackend(String itemName) async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('userId');
-    final role = prefs.getString('role');
-    final now = DateTime.now();
-    final due = now.add(const Duration(days: 3));
-
-    final url = Uri.parse('http://localhost:8080/rental/rent');
-    final body = jsonEncode({
-      "itemId": null,
-      "item": itemName,
-      "userId": userId,
-      "role": role,
-      "rentedAt": now.toIso8601String(),
-      "dueDate": due.toIso8601String(),
-      "returnedAt": null,
-      "daysLeft": 3,
-      "statusMessage": "대여 중입니다."
-    });
-
-    final response = await http.post(url,
-        headers: {'Content-Type': 'application/json'}, body: body);
-
-    if (response.statusCode == 200) {
-      print('대여 등록 완료');
-    } else {
-      print('대여 등록 실패: \${response.statusCode}');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final List<String> filteredItems = rentalItems[selectedCollege]
         ?.where((item) => item.contains(searchText))
         .toList() ??
         [];
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -79,6 +45,7 @@ class _RentalPageState extends State<RentalPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 📚 단과대 리스트
           SizedBox(
             height: 48,
             child: ListView.builder(
@@ -94,57 +61,76 @@ class _RentalPageState extends State<RentalPage> {
                     onSelected: (_) {
                       setState(() => selectedCollege = college);
                     },
-                    selectedColor: Colors.indigo.shade100,
-                    backgroundColor: Colors.grey.shade200,
-                    labelStyle: TextStyle(
-                      color: selectedCollege == college ? Colors.indigo : Colors.black,
-                    ),
                   ),
                 );
               },
             ),
           ),
           const SizedBox(height: 8),
+
+          // 🔍 검색창
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: '물품 검색',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
               onChanged: (value) {
                 setState(() => searchText = value);
               },
             ),
           ),
+
+          // ➕ 물품 등록
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _itemController,
+                    decoration: const InputDecoration(
+                      hintText: '새 물품 이름 입력',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    final newItem = _itemController.text.trim();
+                    if (newItem.isNotEmpty) {
+                      setState(() {
+                        rentalItems[selectedCollege] ??= [];
+                        rentalItems[selectedCollege]!.add(newItem);
+                        _itemController.clear();
+                      });
+                    }
+                  },
+                  child: const Text("등록"),
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 12),
+
+          // 🎒 물품 목록
           Expanded(
             child: ListView.builder(
               itemCount: filteredItems.length,
               itemBuilder: (context, index) {
                 final item = filteredItems[index];
-                return Container(
+                return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
                   child: ListTile(
-                    leading: const Icon(Icons.inventory, color: Colors.indigo),
-                    title: Text(item, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    leading: const Icon(Icons.inventory),
+                    title: Text(item),
                     trailing: ElevatedButton(
                       onPressed: () async {
+                        // ✅ QR 페이지에서 결과를 받아오기
                         final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -154,15 +140,12 @@ class _RentalPageState extends State<RentalPage> {
                             ),
                           ),
                         );
+
+                        // ✅ 대여 완료되었을 경우 rental_status_page에 전달
                         if (result != null && result is Map<String, String>) {
-                          await postRentalToBackend(item);
                           Navigator.pop(context, result);
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.indigo,
-                        foregroundColor: Colors.white,
-                      ),
                       child: const Text('대여하기'),
                     ),
                   ),
