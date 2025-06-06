@@ -1,25 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
+import 'dart:convert';
+
 import '../widgets/chat_bubble.dart';
 import '../widgets/chat_input_field.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   final String username;
 
   const ChatPage({super.key, required this.username});
 
   @override
-  Widget build(BuildContext context) {
-    // 예시 대화 데이터
-    final messages = [
-      {'text': '내일 오후 3시쯤 가능하실까요?', 'time': '오후 2:30', 'isMe': true},
-      {'text': '네, 가능합니다.',                 'time': '오후 2:35', 'isMe': false},
-      {'text': '감사합니다!',                   'time': '오후 2:36', 'isMe': true},
-      {'text': '감사합니다!',                   'time': '오후 2:36', 'isMe': false},
-    ];
+  State<ChatPage> createState() => _ChatPageState();
+}
 
+class _ChatPageState extends State<ChatPage> {
+  final List<Map<String, dynamic>> messages = [];
+  final TextEditingController _controller = TextEditingController();
+  late StompClient stompClient;
+
+  @override
+  void initState() {
+    super.initState();
+
+    stompClient = StompClient(
+      config: StompConfig.SockJS(
+        url: 'http://10.0.2.2:8080/ws-chat',
+        onConnect: onConnectCallback,
+        onWebSocketError: (dynamic error) {
+          print('WebSocket Error: $error');
+        },
+      ),
+    );
+
+    stompClient.activate();
+  }
+
+  void onConnectCallback(StompFrame frame) {
+    stompClient.subscribe(
+      destination: '/sub/chat/room/1',
+      callback: (frame) {
+        final message = jsonDecode(frame.body!);
+        setState(() {
+          messages.add({
+            'text': message['content'],
+            'time': '지금',
+            'isMe': false,
+          });
+        });
+      },
+    );
+  }
+
+  void sendMessage() {
+    final text = _controller.text.trim();
+    if (text.isEmpty || !stompClient.connected) return;
+
+    stompClient.send(
+      destination: '/pub/chat/message',
+      body: jsonEncode({
+        'roomId': '1',                 // 채팅방 번호
+        'sender': widget.username,     // 사용자 이름
+        'content': text                // 입력한 메시지
+      }),
+    );
+
+    setState(() {
+      messages.add({
+        'text': text,
+        'time': '지금',
+        'isMe': true,
+      });
+    });
+
+    _controller.clear();
+  }
+
+  @override
+  void dispose() {
+    stompClient.deactivate();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(username),
+        title: Text(widget.username),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -31,7 +101,7 @@ class ChatPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // 최초 인사 (아바타 + 텍스트)
+          // 인사
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -42,31 +112,32 @@ class ChatPage extends StatelessWidget {
                   child: Icon(Icons.person, color: Colors.white),
                 ),
                 SizedBox(width: 12),
-                Text(
-                  '안녕하세요',
-                  style: TextStyle(fontSize: 16),
-                ),
+                Text('안녕하세요', style: TextStyle(fontSize: 16)),
               ],
             ),
           ),
 
-          // 대화 리스트
+          // 메시지 목록
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.zero,
               itemCount: messages.length,
-              itemBuilder: (context, i) {
-                final msg = messages[i];
+              itemBuilder: (context, index) {
+                final msg = messages[index];
                 return ChatBubble(
-                  text: msg['text'] as String,
-                  time: msg['time'] as String,
-                  isMe: msg['isMe'] as bool,
+                  text: msg['text'],
+                  time: msg['time'],
+                  isMe: msg['isMe'],
                 );
               },
             ),
           ),
 
-          const ChatInputField(),
+          // 입력창
+          ChatInputField(
+            controller: _controller,
+            onSend: sendMessage,
+          ),
         ],
       ),
     );

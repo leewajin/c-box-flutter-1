@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class ChatInputField extends StatelessWidget {
-  /// 외부에서 컨트롤러나 보낼 때 콜백을 붙이고 싶으면 전달하세요.
   final TextEditingController? controller;
   final VoidCallback? onSend;
 
@@ -14,7 +13,6 @@ class ChatInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // 위에 그레이 톤 선 하나
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -24,11 +22,11 @@ class ChatInputField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: Row(
         children: [
-          // 텍스트 입력
           Expanded(
             child: TextField(
               controller: controller,
               textInputAction: TextInputAction.send,
+              onSubmitted: (_) => onSend?.call(),
               decoration: InputDecoration(
                 hintText: '메시지를 입력하세요',
                 filled: true,
@@ -42,7 +40,6 @@ class ChatInputField extends StatelessWidget {
               ),
             ),
           ),
-          // 전송 버튼
           IconButton(
             icon: const Icon(Icons.send, color: Colors.blue),
             onPressed: onSend ?? () {},
