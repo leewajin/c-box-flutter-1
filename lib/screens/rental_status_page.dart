@@ -8,6 +8,7 @@ import '../widgets/custom_app_bar_title.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'utils/shared_preferences_util.dart';
 
+
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
 
@@ -26,7 +27,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
 
   Future<void> fetchMyRentalStatus() async {
     final userId = await SharedPreferencesUtil.getUserId();
-    final url = Uri.parse('http://localhost:8080/rental/mypage');
+    final url = Uri.parse('http://172.30.1.58:8080/rental/mypage');
 
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
@@ -155,10 +156,8 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                           builder: (_) => const RentalPage(),
                         ),
                       );
-                      if (result != null && result is Map<String, String>) {
-                        setState(() {
-                          myRentals.add(result);
-                        });
+                      if (result != null) {
+                        await fetchMyRentalStatus(); // ✅ 추가된 부분
                       }
                     },
                     icon: const Icon(Icons.shopping_cart),
