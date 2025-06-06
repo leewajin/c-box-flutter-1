@@ -90,7 +90,7 @@ class SettingsPage extends StatelessWidget {
             title: '로그아웃',
             onTap: () async {
               final response = await http.put(
-                Uri.parse('http://172.30.1.3:8080/users/logout'),
+                Uri.parse('http://10.0.2.2:8080/users/logout'),
               );
 
               if (response.statusCode == 200) {
@@ -122,7 +122,7 @@ class SettingsPage extends StatelessWidget {
               }
 
               final response = await http.delete(
-                Uri.parse('http://172.30.1.3:8080/users/delete/$userId'),
+                Uri.parse('http://10.0.2.2/users/delete/$userId'),
               );
 
               if (response.statusCode == 200) {
