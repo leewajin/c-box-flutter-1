@@ -155,10 +155,8 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                           builder: (_) => const RentalPage(),
                         ),
                       );
-                      if (result != null && result is Map<String, String>) {
-                        setState(() {
-                          myRentals.add(result);
-                        });
+                      if (result != null) {
+                        await fetchMyRentalStatus(); // ✅ 추가된 부분
                       }
                     },
                     icon: const Icon(Icons.shopping_cart),
