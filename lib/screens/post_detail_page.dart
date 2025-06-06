@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import '../widgets/comment_item.dart'; // 댓글 컴포넌트 import
 
 class PostDetailPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   final TextEditingController _commentController = TextEditingController();
 
   // 댓글 목록을 저장할 리스트!
-  final List<Map<String, String>> _comments = [
+  final List<Map<String, dynamic>> _comments = [
     {
       'username': '사용자2',
       'comment': '저요! 어디에 계신가요?',
@@ -36,13 +37,19 @@ class _PostDetailPageState extends State<PostDetailPage> {
     if (text.isNotEmpty) {
       setState(() {
         _comments.insert(0, {
-          'username': '나', // 나중에 로그인 정보로 바꿔도 좋아요!
+          'username': '나',
           'comment': text,
-          'time': '방금 전',
+          'time': DateTime.now(), // 시간 객체 저장!
         });
-        _commentController.clear(); // 입력창 비우기
+        _commentController.clear();
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    timeago.setLocaleMessages('ko', timeago.KoMessages());
   }
 
   @override
@@ -143,10 +150,20 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
             // 댓글 리스트 보여주기
             ..._comments.map((comment) {
+              final dynamic rawTime = comment['time'];
+
+              final String formattedTime;
+              if (rawTime is DateTime) {
+                formattedTime = timeago.format(rawTime, locale: 'ko'); // 진짜 시간일 때만!
+              } else if (rawTime is String) {
+                formattedTime = rawTime; // 목데이터나 문자열이면 그대로 표시
+              } else {
+                formattedTime = '알 수 없음';
+              }               // 🔥 아니면 그대로 사용!
               return CommentItem(
                 username: comment['username'] ?? '',
                 comment: comment['comment'] ?? '',
-                time: comment['time'] ?? '',
+                time: formattedTime,
               );
             }).toList(),
 
