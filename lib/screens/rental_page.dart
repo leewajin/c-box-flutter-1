@@ -9,6 +9,7 @@ import '../widgets/search_bar.dart';
 import 'rental_register_page.dart';
 import 'rental_qr_page.dart';
 
+
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
 

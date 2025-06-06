@@ -10,6 +10,7 @@ class QRScanPage extends StatefulWidget {
   final String itemName;
   final bool isRenting; // true: 대여, false: 반납
 
+
   const QRScanPage({
     super.key,
     required this.itemName,

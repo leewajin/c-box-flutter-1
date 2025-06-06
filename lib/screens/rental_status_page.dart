@@ -8,6 +8,7 @@ import '../widgets/custom_app_bar_title.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'utils/shared_preferences_util.dart';
 
+
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
 
