@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/category_provider.dart';
 import '../widgets/rental_item_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/category_tab_bar.dart';
+import '../widgets/search_bar.dart';
+import 'rental_register_page.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -41,6 +42,13 @@ class _RentalPageState extends State<RentalPage> {
     RentalItem(name: '보조배터리', college: '문과대학', quantity: 2),
     RentalItem(name: '드라이버', college: '공과대학', quantity: 0),
   ];
+
+  void _navigateToCreatePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RentalRegisterPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,69 +96,7 @@ class _RentalPageState extends State<RentalPage> {
           const SizedBox(height: 8),
 
           // ➕ 물품 등록
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _itemController,
-                    decoration: const InputDecoration(
-                      hintText: '물품 이름',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 1,
-                  child: TextField(
-                    controller: _quantityController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: '수량',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    final role = prefs.getString('role');
 
-                    if (role != 'ADMIN') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("관리자만 등록할 수 있습니다.")),
-                      );
-                      return;
-                    }
-
-                    final newItemName = _itemController.text.trim();
-                    final quantityText = _quantityController.text.trim();
-                    final quantity = int.tryParse(quantityText) ?? 0;
-
-                    if (newItemName.isNotEmpty && quantity > 0) {
-                      setState(() {
-                        allItems.add(
-                          RentalItem(
-                            name: newItemName,
-                            college: selectedCollege == '전체' ? '기타' : selectedCollege,
-                            quantity: quantity,
-                          ),
-                        );
-                        _itemController.clear();
-                        _quantityController.clear();
-                      });
-                    }
-                  },
-                  child: const Text("등록"),
-                ),
-
-              ],
-            ),
-          ),
 
           const SizedBox(height: 12),
 
@@ -171,6 +117,17 @@ class _RentalPageState extends State<RentalPage> {
           ),
         ],
       ),
+      //오른쪽하단에 +버튼 추가
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToCreatePage,
+        backgroundColor: Colors.indigo,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: const Icon(Icons.add, size: 32, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
       bottomNavigationBar: const BottomNavBar(),
     );
   }
