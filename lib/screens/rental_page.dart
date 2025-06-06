@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/category_provider.dart';
 import '../widgets/rental_item_card.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/category_tab_bar.dart';
-import '../widgets/search_bar.dart';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -116,22 +116,30 @@ class _RentalPageState extends State<RentalPage> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {
-                    final name = _itemController.text.trim();
-                    final qtyText = _quantityController.text.trim();
-                    final quantity = int.tryParse(qtyText) ?? 0;
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    final role = prefs.getString('role');
 
-                    if (name.isNotEmpty && quantity > 0 && selectedCollege != '전체') {
+                    if (role != 'ADMIN') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("관리자만 등록할 수 있습니다.")),
+                      );
+                      return;
+                    }
+
+                    final newItemName = _itemController.text.trim();
+                    final quantityText = _quantityController.text.trim();
+                    final quantity = int.tryParse(quantityText) ?? 0;
+
+                    if (newItemName.isNotEmpty && quantity > 0) {
                       setState(() {
-                        allItems.add(RentalItem(
-                          name: name,
-                          college: selectedCollege,
-                          quantity: quantity,
-                        ));
+                        allItems.add(
+                          RentalItem(
+                            name: newItemName,
+                            college: selectedCollege == '전체' ? '기타' : selectedCollege,
+                            quantity: quantity,
+                          ),
+                        );
                         _itemController.clear();
                         _quantityController.clear();
                       });
@@ -139,6 +147,7 @@ class _RentalPageState extends State<RentalPage> {
                   },
                   child: const Text("등록"),
                 ),
+
               ],
             ),
           ),
