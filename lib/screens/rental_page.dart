@@ -112,7 +112,6 @@ class _RentalPageState extends State<RentalPage> {
                   },
                   child: const Text("등록"),
                 ),
-
               ],
             ),
           ),
