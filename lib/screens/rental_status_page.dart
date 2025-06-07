@@ -27,21 +27,35 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
 
   Future<void> fetchMyRentalStatus() async {
     final userId = await SharedPreferencesUtil.getUserId();
-    final url = Uri.parse('http://172.30.1.58:8080/rental/mypage');
+    final token = await SharedPreferencesUtil.getToken();
+    final url = Uri.parse('http://123.141.6.30:8080/users/mypage/rental');
 
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
     });
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
+
+      print('현재 로그인된 userId: $userId');
+      print('서버에서 받은 대여 목록: $data');
+
       setState(() {
-        myRentals = data.map((r) => r as Map<String, dynamic>)
-            .where((rental) => rental['userId'] == userId)
+        myRentals = data
+            .map((r) => r as Map<String, dynamic>)
+            .where((rental) =>
+        rental['userId']?.toString().trim() == userId?.trim())
             .toList();
       });
+
+      print('필터링된 나의 대여 목록: $myRentals');
     } else {
       print('불러오기 실패: ${response.statusCode}');
+      print('요청 URL: $url');
+      print('응답 상태 코드: ${response.statusCode}');
+      print('응답 본문: ${response.body}');
+
     }
   }
 

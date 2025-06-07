@@ -15,8 +15,8 @@ class _LoginPageState extends State<LoginPage> {
   final _pwController = TextEditingController();
 
   Future<void> _login() async {
+    final url = Uri.parse('http://123.141.6.30:8080/users/login'); //JWT 반환하는 API
 
-    final url = Uri.parse('http://10.0.2.2:8080/users/login');
     try {
       final response = await http.post(
         url,
@@ -32,13 +32,17 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final name = data['name'];
-        final role = data['role'];
+        final token = data['token'] ?? '';
+        final userId = data['userId']?.toString() ?? '';
+        final role = data['role'] ?? '';
+        final name = data['name'] ?? '';
+
 
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('username', name);
-        await prefs.setString('userId', _idController.text);
+        await prefs.setString('jwt', token);
+        await prefs.setString('userId', userId);
         await prefs.setString('role', role);
+        await prefs.setString('name', name);
 
         if (!context.mounted) return;
 
@@ -84,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                print("로그인 버튼 눌림!"); // ✅ 이거 추가
+                print("로그인 버튼 눌림!");
                 _login();
               },
               child: const Text("로그인"),
