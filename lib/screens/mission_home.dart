@@ -105,10 +105,29 @@ class _MissionHomeState extends State<MissionHome> {
   }
 }
 
-class MainContent extends StatelessWidget {
+class MainContent extends StatefulWidget {
   final List<Map<String, dynamic>> posts;
 
   const MainContent({super.key, required this.posts});
+
+  @override
+  State<MainContent> createState() => _MainContentState();
+}
+
+class _MainContentState extends State<MainContent> {
+  late List<Map<String, dynamic>> filteredPosts;
+
+  @override
+  void initState() {
+    super.initState();
+    filteredPosts = widget.posts;
+  }
+
+  void _onSearchFiltered(List<Map<String, dynamic>> result) {
+    setState(() {
+      filteredPosts = result;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,9 +158,9 @@ class MainContent extends StatelessWidget {
     ];
 
     // ✅ 선택된 카테고리에 따라 필터링
-    final filteredPosts = selectedCategory == '전체'
-        ? posts
-        : posts.where((post) => post['category'] == selectedCategory).toList();
+    final categoryFiltered = selectedCategory == '전체'
+        ? filteredPosts
+        : filteredPosts.where((post) => post['category'] == selectedCategory).toList();
 
     return Column(
       children: [
@@ -175,8 +194,22 @@ class MainContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        const CustomSearchBar(),
+        // ✅ 검색창 적용!
+        CustomSearchBar<Map<String, dynamic>>(
+          allItems: widget.posts,
+          onFiltered: _onSearchFiltered,
+          filter: (item, query) {
+            final title = item['title']?.toString().toLowerCase() ?? '';
+            final author = item['author']?.toString().toLowerCase() ?? '';
+            final search = query.toLowerCase();
+            return title.contains(search) || author.contains(search);
+          },
+        ),
+
+        // ✅ 카테고리 필터 탭
         const CategoryTabBar(categories: ['전체', '요청', '수업', '기타']),
+
+        // ✅ 게시글 리스트
         Expanded(
           child: filteredPosts.isEmpty
               ? const Center(child: Text('게시글이 없습니다.'))
