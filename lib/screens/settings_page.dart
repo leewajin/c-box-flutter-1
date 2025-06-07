@@ -122,7 +122,7 @@ class SettingsPage extends StatelessWidget {
               }
 
               final response = await http.delete(
-                Uri.parse('http://10.0.2.2:8080/users/delete/$userId'),
+                Uri.parse('http://10.0.2.2/users/delete/$userId'),
               );
 
               if (response.statusCode == 200) {

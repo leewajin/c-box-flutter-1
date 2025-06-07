@@ -10,6 +10,7 @@ class QRScanPage extends StatefulWidget {
   final String itemName;
   final bool isRenting; // true: 대여, false: 반납
 
+
   const QRScanPage({
     super.key,
     required this.itemName,
@@ -75,6 +76,8 @@ class _QRScanPageState extends State<QRScanPage> {
       } else {
         _showDialog('오류', '서버 오류가 발생했습니다.');
       }
+      //QR POST 성공 후 itemID를 상위 페이지로 전달하여 수량 변경을 유도
+      Navigator.pop(context, itemId);
     });
   }
 

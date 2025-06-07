@@ -15,7 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final _pwController = TextEditingController();
 
   Future<void> _login() async {
-    final url = Uri.parse('http://10.0.2.2:8080/users/login');
+    final url = Uri.parse('http://10.0.2.2/users/login');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
