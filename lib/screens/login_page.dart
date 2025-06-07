@@ -27,8 +27,10 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      final name = data['name'];
       final role = data['role']; // ✅ role 추출
       final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('username', name);
       await prefs.setString('userId', _idController.text);
       await prefs.setString('role', role); // 필요하면 저장
 
