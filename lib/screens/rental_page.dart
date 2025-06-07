@@ -112,24 +112,8 @@ class _RentalPageState extends State<RentalPage> {
           const SizedBox(height: 8),
 
           // 🔍 검색창
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: '물품 검색',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchText = value.trim();
-                });
-              },
-            ),
-          ),
-
+          CustomSearchBar(),
           const SizedBox(height: 8),
-
-          const SizedBox(height: 12),
 
           // 🎒 물품 목록
           Expanded(
