@@ -45,6 +45,10 @@ class _QRScanPageState extends State<QRScanPage> {
         return;
       }
 
+      if (qrData.startsWith('rental:')){
+        _showDialog('QR','대여 완료되었습니다.',null);
+      }
+
       final itemId = int.tryParse(parts[1]);
       final item = parts[2];
 
@@ -66,7 +70,7 @@ class _QRScanPageState extends State<QRScanPage> {
         "statusMessage": widget.isRenting ? "대여 중입니다." : "반납 완료"
       };
 
-      final url = Uri.parse('http://localhost:8080/rental/${widget.isRenting ? 'rent' : 'return'}');
+      final url = Uri.parse('http://172.3.0.58:8080/rental/${widget.isRenting ? 'rent' : 'return'}');
       final response = await http.post(url,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(requestBody));
