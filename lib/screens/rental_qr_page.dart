@@ -35,13 +35,13 @@ class _QRScanPageState extends State<QRScanPage> {
 
       final qrData = scanData.code;
       if (qrData == null || !qrData.startsWith('rental:')) {
-        _showDialog('QR 오류', '잘못된 QR 코드입니다.');
+        _showDialog('QR 오류', '잘못된 QR 코드입니다.', null); // ✅ null 추가!
         return;
       }
 
       final parts = qrData.split(':');
       if (parts.length != 3) {
-        _showDialog('QR 오류', 'QR 코드 형식이 잘못되었습니다.');
+        _showDialog('QR 오류', 'QR 코드 형식이 잘못되었습니다.', null); // ✅ null 추가!
         return;
       }
 
@@ -72,16 +72,21 @@ class _QRScanPageState extends State<QRScanPage> {
           body: jsonEncode(requestBody));
 
       if (response.statusCode == 200) {
-        _showDialog('성공', widget.isRenting ? '대여 완료되었습니다.' : '반납 완료되었습니다.');
+        // ✅ 성공 시 팝업 → 확인 누르면 상위로 pop(itemId 전달)
+        _showDialog(
+          '성공',
+          widget.isRenting ? '대여 완료되었습니다.' : '반납 완료되었습니다.',
+              () {
+            Navigator.pop(context, itemId); // ✅ 팝업 닫은 후 상위 페이지로 이동
+          },
+        );
       } else {
-        _showDialog('오류', '서버 오류가 발생했습니다.');
+        _showDialog('오류', '서버 오류가 발생했습니다.', null); // ✅ 실패 시는 이동 없음
       }
-      //QR POST 성공 후 itemID를 상위 페이지로 전달하여 수량 변경을 유도
-      Navigator.pop(context, itemId);
     });
   }
 
-  void _showDialog(String title, String message) {
+  void _showDialog(String title, String message, VoidCallback? onConfirm) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -89,12 +94,17 @@ class _QRScanPageState extends State<QRScanPage> {
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // ✅ 팝업(AlertDialog) 닫기
+              if (onConfirm != null) {
+                onConfirm(); // ✅ 팝업 닫은 뒤 실제 이동 처리
+              }
+            },
             child: const Text('확인'),
           )
         ],
       ),
-    ).then((_) => Navigator.pop(context));
+    );
   }
 
   @override
