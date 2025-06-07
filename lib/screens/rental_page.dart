@@ -38,14 +38,20 @@ class _RentalPageState extends State<RentalPage> {
   ];
 
   String searchText = '';
-  final TextEditingController _itemController = TextEditingController();
-  final TextEditingController _quantityController = TextEditingController();
 
   List<RentalItem> allItems = [
-    RentalItem(itemId: 1, name: '우산', college: '문과대학', quantity: 5),
+    RentalItem(itemId: 1, name: 'A', college: '문과대학', quantity: 5),
     RentalItem(itemId: 2, name: '보조배터리', college: '문과대학', quantity: 2),
     RentalItem(itemId: 3, name: '드라이버', college: '공과대학', quantity: 0),
   ];
+
+  List<RentalItem> filteredItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredItems = allItems;
+  }
 
   // ✅ QR 스캔 후 수량 반영
   void _navigateToQRPage(RentalItem item) async {
@@ -82,16 +88,33 @@ class _RentalPageState extends State<RentalPage> {
     }
   }
 
+  void _applyCombinedFilter() {
+    final selectedCollege = context.read<CategoryProvider>().selected;
 
+    setState(() {
+      filteredItems = allItems.where((item) {
+        final matchText = item.name.toLowerCase().contains(searchText.toLowerCase());
+        final matchCollege = selectedCollege == '전체' || item.college == selectedCollege;
+        return matchText && matchCollege;
+      }).toList();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _applyCombinedFilter();
+  }
 
   @override
   Widget build(BuildContext context) {
     final selectedCollege = context.watch<CategoryProvider>().selected;
 
-    List<RentalItem> filteredItems = allItems.where((item) {
-      final matchesCollege = selectedCollege == '전체' || item.college == selectedCollege;
-      final matchesSearch = item.name.contains(searchText);
-      return matchesCollege && matchesSearch;
+    // 🔍 검색 + 카테고리 필터 동시에 적용!
+    final visibleItems = allItems.where((item) {
+      final matchText = item.name.toLowerCase().contains(searchText.toLowerCase());
+      final matchCollege = selectedCollege == '전체' || item.college == selectedCollege;
+      return matchText && matchCollege;
     }).toList();
 
     return Scaffold(
@@ -106,37 +129,33 @@ class _RentalPageState extends State<RentalPage> {
         automaticallyImplyLeading: false,
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const CategoryTabBar(categories: colleges),
           const SizedBox(height: 8),
 
-          // 🔍 검색창
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: '물품 검색',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchText = value.trim();
-                });
-              },
-            ),
+          // ✅ 검색창 위젯 (변수 넘기기)
+          CustomSearchBar<RentalItem>(
+            allItems: allItems,
+            onFiltered: (_) {},
+            filter: (_, __) => true,
+            onChanged: (text) {
+              setState(() {
+                searchText = text;
+              });
+              _applyCombinedFilter(); // 👈 검색어 바뀔 때마다 필터링
+            },
           ),
 
           const SizedBox(height: 8),
 
-          const SizedBox(height: 12),
-
           // 🎒 물품 목록
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredItems.length,
+            child: visibleItems.isEmpty
+                ? const Center(child: Text('검색 결과가 없습니다'))
+                : ListView.builder(
+              itemCount: visibleItems.length,
               itemBuilder: (context, index) {
-                final item = filteredItems[index];
+                final item = visibleItems[index];
                 return RentalItemCard(
                   item: item,
                   onRented: (result) {
