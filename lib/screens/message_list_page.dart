@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import '../widgets/message_item.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/search_bar.dart';
 import 'chat_page.dart';
 
-class MessageListPage extends StatelessWidget {
+class MessageListPage extends StatefulWidget {
   const MessageListPage({super.key});
 
+  @override
+  State<MessageListPage> createState() => _MessageListPageState();
+}
+
+class _MessageListPageState extends State<MessageListPage> {
   // 샘플 데이터
-  final List<Map<String, String>> _messages = const [
+  final List<Map<String, String>> _allMessages = [
     {
-      'username': '유저1',
+      'username': 'A',
       'snippet': '안녕하세요',
       'time': '오전 9:24',
     },
@@ -31,6 +37,14 @@ class MessageListPage extends StatelessWidget {
     },
   ];
 
+  List<Map<String, String>> _filteredMessages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredMessages = _allMessages;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,28 +54,48 @@ class MessageListPage extends StatelessWidget {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView.separated(
-        itemCount: _messages.length,
-        separatorBuilder: (context, index) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final msg = _messages[index];
-          return InkWell(
-            onTap: () {
-              // 여기다 Navigator.push 스니펫 적용!
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ChatPage(username: msg['username']!),
-                ),
-              );
+      body: Column(
+        children: [
+          CustomSearchBar<Map<String, String>>(
+            allItems: _allMessages,
+            onFiltered: (results) {
+              setState(() {
+                _filteredMessages = results;
+              });
             },
-            child: MessageItem(
-              username: msg['username']!,
-              snippet: msg['snippet']!,
-              time: msg['time']!,
+            filter: (item, query) {
+              final username = item['username']?.toLowerCase() ?? '';
+              final snippet = item['snippet']?.toLowerCase() ?? '';
+              final search = query.toLowerCase();
+              return username.contains(search) || snippet.contains(search);
+            },
+          ),
+          const Divider(height: 1), // 검색창과 리스트 사이 경계선!
+          Expanded(
+            child: ListView.separated(
+              itemCount: _filteredMessages.length,
+              separatorBuilder: (context, index) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final msg = _filteredMessages[index];
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChatPage(username: msg['username']!),
+                      ),
+                    );
+                  },
+                  child: MessageItem(
+                    username: msg['username']!,
+                    snippet: msg['snippet']!,
+                    time: msg['time']!,
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
       bottomNavigationBar: const BottomNavBar(),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../widgets/comment_item.dart'; // 댓글 컴포넌트 import
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostDetailPage extends StatefulWidget {
   final String title;
@@ -32,18 +33,22 @@ class _PostDetailPageState extends State<PostDetailPage> {
     },
   ];
 
-  void _addComment() {
+  void _addComment() async{
     final text = _commentController.text.trim();
-    if (text.isNotEmpty) {
-      setState(() {
-        _comments.insert(0, {
-          'username': '나',
-          'comment': text,
-          'time': DateTime.now(), // 시간 객체 저장!
-        });
-        _commentController.clear();
+    if (text.isEmpty) return;
+
+    // ✅ SharedPreferences에서 사용자 이름 꺼내오기
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString('username') ?? '익명';
+
+    setState(() {
+      _comments.insert(0, {
+        'username': username,
+        'comment': text,
+        'time': DateTime.now(), // 시간 객체 저장!
       });
-    }
+      _commentController.clear();
+    });
   }
 
   @override

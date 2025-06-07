@@ -87,8 +87,6 @@ class _QRScanPageState extends State<QRScanPage> {
       } else {
         _showDialog('오류', '서버 오류가 발생했습니다.', null); // ✅ 실패 시는 이동 없음
       }
-      //QR POST 성공 후 itemID를 상위 페이지로 전달하여 수량 변경을 유도
-      Navigator.pop(context, itemId);
     });
   }
 
