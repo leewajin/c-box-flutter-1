@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'settings_page.dart';
 import 'post_list_page.dart';      // 내 게시글 화면
 import 'rental_status_page.dart'; // 대여현황 화면
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/bottom_nav_bar.dart';
 
-class MyPage extends StatelessWidget {
+class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
+
+  @override
+  State<MyPage> createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  String userName = '사용자'; // 초기값 설정
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('username') ?? '이름 없음';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +52,8 @@ class MyPage extends StatelessWidget {
                   child: const Icon(Icons.person, size: 40, color: Colors.white),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  '사용자1',
+                Text(
+                  userName,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
