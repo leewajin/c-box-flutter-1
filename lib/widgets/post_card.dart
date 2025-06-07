@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/post_detail_page.dart';
 
-class PostCard extends StatelessWidget {
+
+class PostCard extends StatefulWidget {
   final String category;
   final String title;
   final int comments;
   final DateTime createdAt;
+  final String author;
 
   const PostCard({
     super.key,
@@ -13,7 +16,28 @@ class PostCard extends StatelessWidget {
     required this.title,
     required this.comments,
     required this.createdAt,
+    required this.author,
   });
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  String userName = '로딩 중...';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('username') ?? '이름 없음';
+    });
+  }
 
   String timeAgo(DateTime dateTime) {
     final Duration diff = DateTime.now().difference(dateTime);
@@ -48,24 +72,24 @@ class PostCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  category,
+                  widget.category,
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
               const SizedBox(width: 8),
               Text(
-                title,
+                widget.title,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text('작성자   ${timeAgo(createdAt)}'),
+          Text('${widget.author}  ${timeAgo(widget.createdAt)}'),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('댓글 $comments'),
+              Text('댓글 ${widget.comments}'),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigo,  // 버튼 배경색
@@ -76,9 +100,9 @@ class PostCard extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => PostDetailPage(
-                        title: title,
-                        category: category,
-                        author: '사용자1',  // 지금은 하드코딩이지만 나중에 동적으로!
+                        title: widget.title,
+                        category: widget.category,
+                        author: widget.author, // SharedPreferences에서 불러온 이름!
                         content: '노트북이 고장났는데 어떻게 고쳐야 할지 모르겠어요. 수리 가능한 분 계시면 도와주셨으면 합니다.', // 이것도 데이터로 넘길 수 있음
                       ),
                     ),

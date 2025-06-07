@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/category_dropdown.dart';
 import '../widgets/comment_checkbox.dart';
 
@@ -81,7 +82,7 @@ class _PostCreatePageState extends State<PostCreatePage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_titleController.text.isEmpty ||
                       _contentController.text.isEmpty ||
                       _selectedCategory == null) {
@@ -89,16 +90,20 @@ class _PostCreatePageState extends State<PostCreatePage> {
                       const SnackBar(content: Text('제목, 내용, 카테고리를 모두 입력하세요!')),
                     );
                   } else {
+                    final prefs = await SharedPreferences.getInstance();
+                    final author = prefs.getString('username') ?? '익명';
+
                     final newPost = {
                       'title': _titleController.text,
                       'content': _contentController.text,
                       'category': _selectedCategory!,
-                      'createdAt': DateTime.now().toString(),
+                      'createdAt': DateTime.now().toIso8601String(),
                       'allowComments': _allowComments,
                       'comments': 0,
+                      'author': author, // ✅ 작성자 추가!!
                     };
 
-                    Navigator.pop(context, newPost); // 🎉 글 정보를 pop으로 함께 전달!
+                    Navigator.pop(context, newPost); // 🎉 글 정보를 함께 전달!
                   }
                 },
                 style: ElevatedButton.styleFrom(
