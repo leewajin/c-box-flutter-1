@@ -15,7 +15,6 @@ class _LoginPageState extends State<LoginPage> {
   final _pwController = TextEditingController();
 
   Future<void> _login() async {
-    print("로그인 시도 중...");
 
     final url = Uri.parse('http://10.0.2.2:8080/users/login');
     try {

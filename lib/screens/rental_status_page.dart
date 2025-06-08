@@ -27,7 +27,7 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
 
   Future<void> fetchMyRentalStatus() async {
     final userId = await SharedPreferencesUtil.getUserId();
-    final url = Uri.parse('http://localhost:8080/rental/mypage');
+    final url = Uri.parse('http://172.30.1.58:8080/rental/mypage');
 
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
