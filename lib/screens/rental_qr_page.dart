@@ -1,4 +1,6 @@
+import 'package:c_box/screens/rental_status_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'utils/shared_preferences_util.dart';
 
@@ -55,6 +57,7 @@ class _QRScanPageState extends State<QRScanPage> {
         };
 
         _showDialog('성공', '대여 완료되었습니다.', () {
+          Provider.of<RentalStatusProvider>(context, listen: false).addRental(rentalInfo);
           Navigator.pop(context, rentalInfo);
         });
       } else {

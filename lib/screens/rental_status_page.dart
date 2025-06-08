@@ -3,6 +3,8 @@ import '../screens/rental_qr_page.dart';
 import '../screens/return_page.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../screens/rental_status_provider.dart';
+import 'package:provider/provider.dart';
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -12,34 +14,11 @@ class RentalStatusPage extends StatefulWidget {
 }
 
 class _RentalStatusPageState extends State<RentalStatusPage> {
-  List<Map<String, dynamic>> myRentals = [];
-
-  @override
-  void initState() {
-    super.initState();
-    loadFakeRentalStatus(); // 초기 더미 데이터
-  }
-
-  void loadFakeRentalStatus() {
-    setState(() {
-      myRentals = [
-        {
-          'item': '보조배터리 #3',
-          'dueDate': '2025-06-13',
-          'statusMessage': '반납 기한 초과',
-        },
-      ];
-    });
-  }
-
-  void addRental(Map<String, dynamic> newRental) {
-    setState(() {
-      myRentals.add(newRental);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final myRentals = context.watch<RentalStatusProvider>().myRentals;
+    final rentalProvider = context.read<RentalStatusProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const CustomAppBarTitle(),
@@ -126,8 +105,9 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                       );
 
                       if (result != null && result is Map<String, dynamic>) {
-                        addRental(result);
+                        rentalProvider.addRental(result); // ✅ Provider 사용
                       }
+
                     },
                     icon: const Icon(Icons.shopping_cart),
                     label: const Text("대여하러 가기"),
@@ -150,11 +130,9 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                         MaterialPageRoute(
                           builder: (_) => ReturnPage(
                             myRentals: myRentals,
-                            onReturnComplete: (index) {
-                              setState(() {
-                                myRentals.removeAt(index);
-                              });
-                            },
+                              onReturnComplete: (index) {
+                                rentalProvider.removeRental(index); // ✅ Provider 사용
+                              }
                           ),
                         ),
                       );
