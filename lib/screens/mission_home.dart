@@ -25,6 +25,7 @@ class _MissionHomeState extends State<MissionHome> {
       'title': '이산구조 시험 언제임?',
       'comments': 3,
       'createdAt': DateTime.now().subtract(const Duration(minutes: 30)),
+      'content': '컴공 이산구조 01분반 시험 언제임?'
     },
     {
       'author': '사용자',
@@ -32,8 +33,15 @@ class _MissionHomeState extends State<MissionHome> {
       'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ',
       'comments': 1,
       'createdAt': DateTime.now().subtract(const Duration(hours: 2)),
+      'content':'공대 3층 여자화장실 휴지 가져다주실 분 구합니다. 사례금 드릴게요 제발요 ㅠㅜㅠㅜ'
     },
   ];
+
+  void updateComments(int index, int newCount) {
+    setState(() {
+      posts[index]['comments'] = newCount;
+    });
+  }
 
   void _navigateToCreatePage() async {
     final result = await Navigator.push(
@@ -73,10 +81,13 @@ class _MissionHomeState extends State<MissionHome> {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: MainContent(posts: posts),
+      body: MainContent(
+        posts: posts,
+        updateComments: updateComments,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreatePage,
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
@@ -107,8 +118,13 @@ class _MissionHomeState extends State<MissionHome> {
 
 class MainContent extends StatefulWidget {
   final List<Map<String, dynamic>> posts;
+  final void Function(int index, int newCount) updateComments;
 
-  const MainContent({super.key, required this.posts});
+  const MainContent({
+    super.key,
+    required this.posts,
+    required this.updateComments,
+  });
 
   @override
   State<MainContent> createState() => _MainContentState();
@@ -215,10 +231,12 @@ class _MainContentState extends State<MainContent> {
               ? const Center(child: Text('게시글이 없습니다.'))
               : ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: filteredPosts.length,
+            itemCount: categoryFiltered.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              final post = filteredPosts[index];
+              final post = categoryFiltered[index];
+              final originalIndex = widget.posts.indexOf(post);
+
               return PostCard(
                 author: post['author'] ?? '익명',
                 category: post['category'],
@@ -227,6 +245,8 @@ class _MainContentState extends State<MainContent> {
                 createdAt: post['createdAt'] is String
                     ? DateTime.parse(post['createdAt'])
                     : post['createdAt'] as DateTime,
+                content: post['content'],
+                onCommentChanged: (newCount) => widget.updateComments(originalIndex, newCount),
               );
             },
           ),

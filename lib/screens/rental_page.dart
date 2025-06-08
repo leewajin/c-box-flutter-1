@@ -7,7 +7,10 @@ import '../widgets/category_tab_bar.dart';
 import '../widgets/rental_item_card.dart';
 import '../widgets/search_bar.dart';
 import 'rental_register_page.dart';
-import 'rental_qr_page.dart'; // ✅ QRScanPage import 추가
+
+import 'rental_qr_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RentalPage extends StatefulWidget {
   const RentalPage({super.key});
@@ -44,12 +47,34 @@ class _RentalPageState extends State<RentalPage> {
     RentalItem(itemId: 3, name: '드라이버', college: '공과대학', quantity: 0),
   ];
 
+
   List<RentalItem> filteredItems = [];
 
   @override
   void initState() {
     super.initState();
-    filteredItems = allItems;
+    fetchRentalItemsFromBackend();
+  }
+
+  Future<void> fetchRentalItemsFromBackend() async {
+    final response = await http.get(Uri.parse('http://172.30.1.58:8080/rental/list'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      setState(() {
+        allItems = data.map((item) => RentalItem(
+          itemId: item['itemId'],
+          name: item['name'],
+          college: item['college'],
+          quantity: item['quantity'],
+        )).toList();
+
+        _applyCombinedFilter(); // ✅ 필터링도 다시 적용
+      });
+    } else {
+      print('대여 물품 불러오기 실패: ${response.statusCode}');
+    }
   }
 
   void _applyCombinedFilter() {
@@ -153,6 +178,7 @@ class _RentalPageState extends State<RentalPage> {
                   item: item,
                   onRented: (_) {
                     _navigateToQRPage(item); // ✅ 여기로 연결
+
                   },
                 );
               },

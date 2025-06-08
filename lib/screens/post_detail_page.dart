@@ -8,6 +8,7 @@ class PostDetailPage extends StatefulWidget {
   final String category;
   final String author;
   final String content;
+  final void Function(int)? onCommentAdded;
 
   const PostDetailPage({
     super.key,
@@ -15,7 +16,10 @@ class PostDetailPage extends StatefulWidget {
     required this.category,
     required this.author,
     required this.content,
+    this.onCommentAdded,
   });
+
+
 
   @override
   State<PostDetailPage> createState() => _PostDetailPageState();
@@ -48,6 +52,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         'time': DateTime.now(), // 시간 객체 저장!
       });
       _commentController.clear();
+      widget.onCommentAdded?.call(_comments.length);
     });
   }
 
@@ -152,6 +157,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
               ],
             ),
             const SizedBox(height: 16),
+
+            // 댓글 개수 표시
+            Text(
+              '댓글 ${_comments.length}개',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
 
             // 댓글 리스트 보여주기
             ..._comments.map((comment) {

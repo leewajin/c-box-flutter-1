@@ -7,6 +7,7 @@ import 'dart:convert';
 import '../widgets/chat_bubble.dart';
 import '../widgets/chat_input_field.dart';
 
+
 class ChatPage extends StatefulWidget {
   final String username;
 
@@ -27,7 +28,9 @@ class _ChatPageState extends State<ChatPage> {
 
     stompClient = StompClient(
       config: StompConfig.SockJS(
-        url: 'http://172.30.1.12:8080/ws-chat',
+
+        url: 'http://10.0.2.2:8080/ws-chat',
+
         onConnect: onConnectCallback,
         onWebSocketError: (dynamic error) {
           print('WebSocket Error: $error');
@@ -43,10 +46,15 @@ class _ChatPageState extends State<ChatPage> {
       destination: '/sub/chat/room/1',
       callback: (frame) {
         final message = jsonDecode(frame.body!);
+
+        /*if(widget.username == "유저2"){
+          return;
+        }*/
+
         setState(() {
           messages.add({
             'text': message['content'],
-            'time': '지금',
+            'time': DateTime.now().toString(),
             'isMe': false,
           });
         });
@@ -70,7 +78,7 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       messages.add({
         'text': text,
-        'time': '지금',
+        'time': DateTime.now().toString(),
         'isMe': true,
       });
     });
@@ -112,7 +120,7 @@ class _ChatPageState extends State<ChatPage> {
                   child: Icon(Icons.person, color: Colors.white),
                 ),
                 SizedBox(width: 12),
-                Text('안녕하세요', style: TextStyle(fontSize: 16)),
+                Text('C:BOX', style: TextStyle(fontSize: 16)),
               ],
             ),
           ),

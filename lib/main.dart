@@ -36,7 +36,15 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
         ),
+
+      // ✅ 아래 테마를 추가해주면 하단바 배경색이 모든 페이지에서 흰색으로 통일됨
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Colors.white,        // 하단바 배경
+        selectedItemColor: Colors.indigo,     // 선택된 아이템 색
+        unselectedItemColor: Colors.grey,     // 선택 안된 아이템 색
+        type: BottomNavigationBarType.fixed,  // 애니메이션 효과 방지
       ),
+    ),
 
       // SplashPage가 앱 시작 화면
       home: SplashPage(),
