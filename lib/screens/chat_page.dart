@@ -27,7 +27,7 @@ class _ChatPageState extends State<ChatPage> {
 
     stompClient = StompClient(
       config: StompConfig.SockJS(
-        url: 'http://172.30.1.58:8080/ws-chat',
+        url: 'http://172.30.1.12:8080/ws-chat',
         onConnect: onConnectCallback,
         onWebSocketError: (dynamic error) {
           print('WebSocket Error: $error');

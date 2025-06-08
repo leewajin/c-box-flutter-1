@@ -70,10 +70,12 @@ class _QRScanPageState extends State<QRScanPage> {
         "statusMessage": widget.isRenting ? "대여 중입니다." : "반납 완료"
       };
 
-      final url = Uri.parse('http://172.3.0.58:8080/rental/${widget.isRenting ? 'rent' : 'return'}');
-      final response = await http.post(url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody));
+      final url = Uri.parse('http://172.30.1.12:8080/users/mypage/rental?userId=$userId');
+
+      final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
 
       if (response.statusCode == 200) {
         // ✅ 성공 시 팝업 → 확인 누르면 상위로 pop(itemId 전달)
@@ -85,7 +87,7 @@ class _QRScanPageState extends State<QRScanPage> {
           },
         );
       } else {
-        _showDialog('오류', '서버 오류가 발생했습니다.', null); // ✅ 실패 시는 이동 없음
+        _showDialog('오류', '이미 대여 중 입니다', null); // ✅ 실패 시는 이동 없음
       }
     });
   }

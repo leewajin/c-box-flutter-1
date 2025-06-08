@@ -27,21 +27,23 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
 
   Future<void> fetchMyRentalStatus() async {
     final userId = await SharedPreferencesUtil.getUserId();
-    final url = Uri.parse('http://172.30.1.58:8080/rental/mypage');
+    final url = Uri.parse('http://172.30.1.12:8080/users/rental/mypage?userId=$userId');
 
-    final response = await http.get(url, headers: {
-      'Content-Type': 'application/json',
-    });
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      setState(() {
-        myRentals = data.map((r) => r as Map<String, dynamic>)
-            .where((rental) => rental['userId'] == userId)
-            .toList();
+    try {
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
       });
-    } else {
-      print('불러오기 실패: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          myRentals = data.map((r) => r as Map<String, dynamic>).toList();
+        });
+      } else {
+        print('불러오기 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('요청 중 오류 발생: $e');
     }
   }
 

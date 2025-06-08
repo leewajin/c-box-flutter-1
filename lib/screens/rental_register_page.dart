@@ -106,7 +106,7 @@ class _RentalRegisterPageState extends State<RentalRegisterPage> {
                 final userId = prefs.getString('userId');
 
                 // ✅ 백엔드로 POST 요청
-                final url = Uri.parse('http://172.30.1.58:8080/rental/rent'); // 실제 주소로 수정
+                final url = Uri.parse('http://172.30.1.12:8080/rental/rent'); // 실제 주소로 수정
                 final body = jsonEncode({
                   'item': itemName,
                   'college': selectedCollege,
