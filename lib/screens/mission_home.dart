@@ -231,11 +231,11 @@ class _MainContentState extends State<MainContent> {
               ? const Center(child: Text('게시글이 없습니다.'))
               : ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: filteredPosts.length,
+            itemCount: categoryFiltered.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final post = categoryFiltered[index];
-              final originalIndex = widget.posts.indexOf(post); // 🔥 원래 인덱스 찾아야 함
+              final originalIndex = widget.posts.indexOf(post);
 
               return PostCard(
                 author: post['author'] ?? '익명',
