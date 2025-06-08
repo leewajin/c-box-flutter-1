@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../screens/rental_page.dart';
+import '../screens/rental_qr_page.dart';
 import '../screens/return_page.dart';
-import '../screens/mission_home.dart';
 import '../widgets/custom_app_bar_title.dart';
 import '../widgets/bottom_nav_bar.dart';
-import 'utils/shared_preferences_util.dart';
-
 
 class RentalStatusPage extends StatefulWidget {
   const RentalStatusPage({super.key});
@@ -22,41 +17,25 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
   @override
   void initState() {
     super.initState();
-    fetchMyRentalStatus();
+    loadFakeRentalStatus(); // 초기 더미 데이터
   }
 
-  Future<void> fetchMyRentalStatus() async {
-    final userId = await SharedPreferencesUtil.getUserId();
-    final token = await SharedPreferencesUtil.getToken();
-    final url = Uri.parse('http://172.30.1.12:8080/users/rental/mypage?userId=$userId');
-
-    final response = await http.get(url, headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+  void loadFakeRentalStatus() {
+    setState(() {
+      myRentals = [
+        {
+          'item': '보조배터리 #3',
+          'dueDate': '2025-06-13',
+          'statusMessage': '반납 기한 초과',
+        },
+      ];
     });
+  }
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-
-      print('현재 로그인된 userId: $userId');
-      print('서버에서 받은 대여 목록: $data');
-
-      setState(() {
-        myRentals = data
-            .map((r) => r as Map<String, dynamic>)
-            .where((rental) =>
-        rental['userId']?.toString().trim() == userId?.trim())
-            .toList();
-      });
-
-      print('필터링된 나의 대여 목록: $myRentals');
-    } else {
-      print('불러오기 실패: ${response.statusCode}');
-      print('요청 URL: $url');
-      print('응답 상태 코드: ${response.statusCode}');
-      print('응답 본문: ${response.body}');
-
-    }
+  void addRental(Map<String, dynamic> newRental) {
+    setState(() {
+      myRentals.add(newRental);
+    });
   }
 
   @override
@@ -72,10 +51,10 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
       body: Column(
         children: [
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
-              children: const [
+              children: [
                 Text("📦 대여중인 물품", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
@@ -108,46 +87,18 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          rental['item'] ?? rental['name'] ?? '이름 없음',
+                          rental['item'] ?? '이름 없음',
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "반납 예정일: ${rental['dueDate']?.substring(0, 10) ?? 'N/A'}",
+                          "반납 예정일: ${rental['dueDate']}",
                           style: const TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "상태: ${rental['statusMessage'] ?? ''}",
+                          "상태: ${rental['statusMessage']}",
                           style: const TextStyle(color: Colors.grey),
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ReturnPage(
-                                    myRentals: myRentals,
-                                    onReturnComplete: (removedIndex) {
-                                      setState(() {
-                                        myRentals.removeAt(removedIndex);
-                                      });
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.indigo,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: const Text("반납하기"),
-                          ),
                         ),
                       ],
                     ),
@@ -167,11 +118,15 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const RentalPage(),
+                          builder: (_) => const QRScanPage(
+                            itemName: "우산 #1",
+                            isRenting: true,
+                          ),
                         ),
                       );
-                      if (result != null) {
-                        await fetchMyRentalStatus(); // ✅ 추가된 부분
+
+                      if (result != null && result is Map<String, dynamic>) {
+                        addRental(result);
                       }
                     },
                     icon: const Icon(Icons.shopping_cart),
@@ -189,8 +144,8 @@ class _RentalStatusPageState extends State<RentalStatusPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: () async {
-                      await Navigator.push(
+                    onPressed: () {
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => ReturnPage(

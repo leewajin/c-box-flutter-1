@@ -33,7 +33,7 @@ class _MyPageState extends State<MyPage> {
       print('hi');
 
       final response = await http.get(
-        Uri.parse('http://123.141.6.30:8080/users/mypage'),
+        Uri.parse('http://172.30.1.12:8080/users/mypage'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -46,7 +46,9 @@ class _MyPageState extends State<MyPage> {
         final serverName = data['name'] ?? '이름 없음';
 
         setState(() => userName = serverName);
-        await prefs.setString('name', serverName);
+        if (token != null) {
+          await prefs.setString('jwt', token);
+        }
       } else if (response.statusCode == 403 || response.statusCode == 401) {
         await prefs.clear();
         _goToLogin();
