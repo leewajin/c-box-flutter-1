@@ -75,6 +75,7 @@ flutter:
   assets:
     - assets/images/laptop.jpg
     - assets/images/cboxlogo.png
+    - assets/images/rogo3.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      // ✅ SplashPage가 앱 시작 화면
+      // SplashPage가 앱 시작 화면
       home: SplashPage(),
 
       routes: {

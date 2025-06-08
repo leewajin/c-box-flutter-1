@@ -82,6 +82,7 @@ class _RentalRegisterPageState extends State<RentalRegisterPage> {
                 // ✅ SharedPreferences에서 관리자 권한(role) 확인
                 final prefs = await SharedPreferences.getInstance();
                 final role = prefs.getString('role');
+                final token = prefs.getString('token');
 
                 // ✅ 관리자(role == 'ADMIN')가 아닐 경우 등록 차단
                 if (role != 'ADMIN') {
@@ -116,7 +117,10 @@ class _RentalRegisterPageState extends State<RentalRegisterPage> {
 
                 final response = await http.post(
                   url,
-                  headers: {'Content-Type': 'application/json'},
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer $token', //JWT 추가
+                  },
                   body: body,
                 );
 
