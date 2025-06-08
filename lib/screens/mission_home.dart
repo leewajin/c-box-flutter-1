@@ -87,7 +87,7 @@ class _MissionHomeState extends State<MissionHome> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreatePage,
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
