@@ -25,6 +25,7 @@ class _MissionHomeState extends State<MissionHome> {
       'title': '이산구조 시험 언제임?',
       'comments': 3,
       'createdAt': DateTime.now().subtract(const Duration(minutes: 30)),
+      'content': '컴공 이산구조 01분반 시험 언제임?'
     },
     {
       'author': '사용자',
@@ -32,6 +33,7 @@ class _MissionHomeState extends State<MissionHome> {
       'title': '공대 3층 화장실에 휴지가 없어요 ㅜㅜㅜ',
       'comments': 1,
       'createdAt': DateTime.now().subtract(const Duration(hours: 2)),
+      'content':'공대 3층 여자화장실 휴지 가져다주실 분 구합니다. 사례금 드릴게요 제발요 ㅠㅜㅠㅜ'
     },
   ];
 
@@ -243,6 +245,7 @@ class _MainContentState extends State<MainContent> {
                 createdAt: post['createdAt'] is String
                     ? DateTime.parse(post['createdAt'])
                     : post['createdAt'] as DateTime,
+                content: post['content'],
                 onCommentChanged: (newCount) => widget.updateComments(originalIndex, newCount),
               );
             },

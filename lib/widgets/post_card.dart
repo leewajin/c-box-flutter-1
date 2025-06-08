@@ -9,6 +9,7 @@ class PostCard extends StatefulWidget {
   final int comments;
   final DateTime createdAt;
   final String author;
+  final String content;
   final void Function(int)? onCommentChanged;
 
   const PostCard({
@@ -18,6 +19,7 @@ class PostCard extends StatefulWidget {
     required this.comments,
     required this.createdAt,
     required this.author,
+    required this.content,
     this.onCommentChanged,
   });
 
@@ -114,7 +116,7 @@ class _PostCardState extends State<PostCard> {
                         title: widget.title,
                         category: widget.category,
                         author: widget.author, // SharedPreferences에서 불러온 이름!
-                        content: '노트북이 고장났는데 어떻게 고쳐야 할지 모르겠어요. 수리 가능한 분 계시면 도와주셨으면 합니다.', // 이것도 데이터로 넘길 수 있음
+                        content: widget.content,
                         onCommentAdded: widget.onCommentChanged, // 댓글 수 전달!
                       ),
                     ),
