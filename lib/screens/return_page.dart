@@ -24,6 +24,19 @@ class _ReturnPageState extends State<ReturnPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
 
+  List<Map<String, dynamic>> get filteredRentals {
+    return widget.myRentals
+        .asMap()
+        .entries
+        .where((entry) {
+      final rental = entry.value;
+      return rental['returnedAt'] == null ||
+          rental['statusMessage'] == '대여 중입니다.';
+    })
+        .map((e) => e.value)
+        .toList();
+  }
+
   Future<void> _startReturnProcess(int index) async {
     setState(() {
       selectedIndex = index;
@@ -39,7 +52,7 @@ class _ReturnPageState extends State<ReturnPage> {
 
     if (selectedIndex == null) return;
 
-    final selectedItem = widget.myRentals[selectedIndex!];
+    final selectedItem = filteredRentals[selectedIndex!];
     final userId = await SharedPreferencesUtil.getUserId();
     final role = await SharedPreferencesUtil.getUserRole();
     final now = DateTime.now();
@@ -53,7 +66,7 @@ class _ReturnPageState extends State<ReturnPage> {
       "statusMessage": "반납 완료"
     });
 
-    final url = Uri.parse('http://localhost:8080/rental/return');
+    final url = Uri.parse('http://172.30.1.12:8080/rental/return');
     final response = await http.post(url, headers: {'Content-Type': 'application/json'}, body: body);
 
     if (response.statusCode == 200) {
@@ -105,10 +118,12 @@ class _ReturnPageState extends State<ReturnPage> {
           });
         },
       )
+          : filteredRentals.isEmpty
+          ? const Center(child: Text("반납할 물품이 없습니다."))
           : ListView.builder(
-        itemCount: widget.myRentals.length,
+        itemCount: filteredRentals.length,
         itemBuilder: (context, index) {
-          final item = widget.myRentals[index];
+          final item = filteredRentals[index];
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(12),
