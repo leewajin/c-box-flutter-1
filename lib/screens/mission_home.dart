@@ -35,6 +35,12 @@ class _MissionHomeState extends State<MissionHome> {
     },
   ];
 
+  void updateComments(int index, int newCount) {
+    setState(() {
+      posts[index]['comments'] = newCount;
+    });
+  }
+
   void _navigateToCreatePage() async {
     final result = await Navigator.push(
       context,
@@ -73,7 +79,10 @@ class _MissionHomeState extends State<MissionHome> {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: MainContent(posts: posts),
+      body: MainContent(
+        posts: posts,
+        updateComments: updateComments,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreatePage,
         backgroundColor: Colors.indigo,
@@ -107,8 +116,13 @@ class _MissionHomeState extends State<MissionHome> {
 
 class MainContent extends StatefulWidget {
   final List<Map<String, dynamic>> posts;
+  final void Function(int index, int newCount) updateComments;
 
-  const MainContent({super.key, required this.posts});
+  const MainContent({
+    super.key,
+    required this.posts,
+    required this.updateComments,
+  });
 
   @override
   State<MainContent> createState() => _MainContentState();
@@ -218,7 +232,9 @@ class _MainContentState extends State<MainContent> {
             itemCount: filteredPosts.length,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              final post = filteredPosts[index];
+              final post = categoryFiltered[index];
+              final originalIndex = widget.posts.indexOf(post); // 🔥 원래 인덱스 찾아야 함
+
               return PostCard(
                 author: post['author'] ?? '익명',
                 category: post['category'],
@@ -227,6 +243,7 @@ class _MainContentState extends State<MainContent> {
                 createdAt: post['createdAt'] is String
                     ? DateTime.parse(post['createdAt'])
                     : post['createdAt'] as DateTime,
+                onCommentChanged: (newCount) => widget.updateComments(originalIndex, newCount),
               );
             },
           ),

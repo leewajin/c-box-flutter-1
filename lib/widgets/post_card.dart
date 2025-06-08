@@ -9,6 +9,7 @@ class PostCard extends StatefulWidget {
   final int comments;
   final DateTime createdAt;
   final String author;
+  final void Function(int)? onCommentChanged;
 
   const PostCard({
     super.key,
@@ -17,6 +18,7 @@ class PostCard extends StatefulWidget {
     required this.comments,
     required this.createdAt,
     required this.author,
+    this.onCommentChanged,
   });
 
   @override
@@ -26,10 +28,19 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   String userName = '로딩 중...';
 
+  int commentCount = 0;
+
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    commentCount = widget.comments; // 처음에는 받은 값으로 초기화
+  }
+
+  void updateCommentCount(int newCount) {
+    setState(() {
+      commentCount = newCount;
+    });
   }
 
   Future<void> _loadUserName() async {
@@ -89,7 +100,7 @@ class _PostCardState extends State<PostCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('댓글 ${widget.comments}'),
+              Text('댓글 $commentCount'),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.indigo,  // 버튼 배경색
@@ -104,6 +115,7 @@ class _PostCardState extends State<PostCard> {
                         category: widget.category,
                         author: widget.author, // SharedPreferences에서 불러온 이름!
                         content: '노트북이 고장났는데 어떻게 고쳐야 할지 모르겠어요. 수리 가능한 분 계시면 도와주셨으면 합니다.', // 이것도 데이터로 넘길 수 있음
+                        onCommentAdded: widget.onCommentChanged, // 댓글 수 전달!
                       ),
                     ),
                   );
